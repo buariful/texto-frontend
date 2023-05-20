@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import { useSignUpMutation } from "../features/userApi";
 
 const Home = () => {
-  const [signUp, { isLoading: signUpLoading, isError: signUpError, error }] =
-    useSignUpMutation();
+  const [signUp] = useSignUpMutation();
   const [signUpData, setSignUpData] = useState({
     name: "",
     email: "",
     password: "",
   });
   const [tab, setTab] = useState("login");
-  const [actionError, setActionError] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -19,16 +18,15 @@ const Home = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    let data = await signUp(signUpData);
-    // console.log(data);
-    if (error) {
-      // setSignUpData({
-      //   name: "",
-      //   email: "",
-      //   password: "",
-      // });
-      console.log("kldsjflksd");
-    }
+
+    signUp(signUpData)
+      .unwrap()
+      .then((res) => {
+        console.log(res, "res");
+      })
+      .catch((err) => {
+        setError(err?.data?.message);
+      });
   };
 
   const loginForm = (
@@ -58,7 +56,8 @@ const Home = () => {
 
   const registerForm = (
     <div>
-      <form onSubmit={handleRegister}>
+      <form onSubmit={handleRegister} className="text-black">
+        {error && <p className="text-red-500 my-2">{error}</p>}
         <input
           required
           type="text"
@@ -95,12 +94,7 @@ const Home = () => {
           className="input input-bordered input-secondary w-full max-w-xs mb-2 "
         />
 
-        <button
-          type="submit"
-          className={`btn block w-full max-w-xs m-auto ${
-            signUpLoading && "loading "
-          }`}
-        >
+        <button type="submit" className={`btn block w-full max-w-xs m-auto`}>
           Submit
         </button>
       </form>
@@ -124,7 +118,7 @@ const Home = () => {
             Register
           </button>
         </div>
-        {actionError && <p className="text-red my-2">{actionError}</p>}
+
         {tab === "login" ? loginForm : registerForm}
       </div>
     </div>
