@@ -1,8 +1,13 @@
 import React, { useState } from "react";
-import { useSignUpMutation } from "../features/userApi";
-
+import { useSignUpMutation } from "../features/auth/userApi";
+import { useDispatch } from "react-redux";
+import { setUser } from "../features/auth/userSlice";
+import { useNavigate } from "react-router-dom";
 const Home = () => {
+  const dispatch = useDispatch();
   const [signUp] = useSignUpMutation();
+  const navigate = useNavigate();
+
   const [signUpData, setSignUpData] = useState({
     name: "",
     email: "",
@@ -18,11 +23,13 @@ const Home = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
 
     signUp(signUpData)
       .unwrap()
-      .then((res) => {
-        console.log(res, "res");
+      .then(async (res) => {
+        dispatch(setUser(res?.data));
+        navigate("/chat");
       })
       .catch((err) => {
         setError(err?.data?.message);
