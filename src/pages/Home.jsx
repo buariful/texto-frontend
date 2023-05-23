@@ -1,18 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  useGetUserByTokenMutation,
-  useLoginMutation,
-  useSignUpMutation,
-} from "../features/auth/userApi";
+import React, { useRef, useState } from "react";
+import { useLoginMutation, useSignUpMutation } from "../features/auth/userApi";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../features/auth/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const auth = localStorage.getItem("auth");
-  const [getUserByToken] = useGetUserByTokenMutation();
+  const userData = useSelector((state) => state.user);
 
   // =============signUp and login form states =========
   const [login] = useLoginMutation();
@@ -31,19 +26,6 @@ const Home = () => {
   const switcherTab = useRef(null);
   const loginTab = useRef(null);
   const registerTab = useRef(null);
-
-  useEffect(() => {
-    const getUser = async () => {
-      if (auth) {
-        const user = await getUserByToken(auth);
-        if (user) {
-          dispatch(setUser(user?.data));
-          navigate("/chat");
-        }
-      }
-    };
-    getUser();
-  }, [auth, dispatch, getUserByToken, navigate]);
 
   const switchTab = (string, btn1, btn2, tab1, tab2) => {
     btn1.current.classList.add("bg-[#080d14]");
@@ -74,7 +56,8 @@ const Home = () => {
     login(data)
       .unwrap()
       .then((res) => {
-        dispatch(setUser(res?.data));
+        dispatch(setUser(res));
+        localStorage.setItem("auth", JSON.stringify(res?.token));
         navigate("/chat");
       })
       .catch((err) => {
@@ -90,13 +73,18 @@ const Home = () => {
     signUp(signUpData)
       .unwrap()
       .then((res) => {
-        dispatch(setUser(res?.data));
+        localStorage.setItem("auth", JSON.stringify(res?.token));
+        dispatch(setUser(res));
         navigate("/chat");
       })
       .catch((err) => {
         setSignError(err?.data?.message);
       });
   };
+
+  if (userData) {
+    return navigate("/chat");
+  }
 
   return (
     <div className="h-screen w-full flex items-center justify-center">

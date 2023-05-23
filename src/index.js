@@ -5,16 +5,13 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
-import ChatProvider from "./context/ChatProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ChatProvider>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </ChatProvider>
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 

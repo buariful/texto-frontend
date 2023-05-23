@@ -5,19 +5,28 @@ import { useGetUsersMutation } from "../features/auth/userApi";
 
 const ChatLeftBar = () => {
   const [getUsers] = useGetUsersMutation();
-  const userData = useSelector((state) => state.user);
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState("");
-  // const [isSearchFocused, setSearchFocused] = useState(false);
+  const [error, setError] = useState("");
+  const userData = useSelector((state) => state.user);
 
-  useEffect(() => {
-    const findUser = async () => {
-      const result = await getUsers(search, userData?.user?.token);
-      setSearchResult(result);
-    };
-    findUser();
-  }, [getUsers, search, userData]);
+  console.log(searchResult);
 
+  const handleSearch = async () => {
+    const token = userData?.user?.token;
+
+    getUsers(search, token)
+      .unwrap()
+      .then((res) => {
+        console.log(res, "res");
+        setError("");
+        setSearchResult(res);
+      })
+      .catch((err) => {
+        setError(err.data.message);
+        console.log(err.data.message);
+      });
+  };
   return (
     <>
       <div className="h-screen w-full bg-[#0000002e] py-3 overflow-y-auto">
@@ -33,8 +42,12 @@ const ChatLeftBar = () => {
             type="text"
             placeholder="Type here"
             className="w-full max-w-xs font-semibold text-sm bg-[#202C33] text-white px-3 py-2 rounded focus:outline-slate-700 focus:border-0"
+            // onChange={handleSearch}
             onChange={(e) => setSearch(e.target.value)}
           />
+          <button className="bg-red-500 p-4" onClick={handleSearch}>
+            search
+          </button>
         </div>
 
         {/* <div className="mt-8">
@@ -56,7 +69,9 @@ const ChatLeftBar = () => {
           </div>
         </div> */}
 
-        <div className="bg-[#202c335d] py-4">sdflskjf</div>
+        <div className="bg-[#202c335d] py-4">
+          {error && <p className="text-red-500">{error}</p>}
+        </div>
       </div>
     </>
   );
