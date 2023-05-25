@@ -9,7 +9,6 @@ export const userApi = apiSlice.injectEndpoints({
         body: userData,
         headers: {
           "Content-Type": "application/json",
-          // Authorization: "Bearer <your_token>",
         },
       }),
     }),
@@ -24,7 +23,7 @@ export const userApi = apiSlice.injectEndpoints({
       }),
     }),
     getUsers: builder.mutation({
-      query: (search, token) => ({
+      query: ({ search, token }) => ({
         url: `/v1/users?search=${search}`,
         method: "GET",
         headers: {
@@ -34,17 +33,6 @@ export const userApi = apiSlice.injectEndpoints({
         },
       }),
     }),
-    // getUsers: builder.mutation({
-    //   query: (search, token) => ({
-    //     url: `/v1/users?search=${search}`,
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       // Authorization: `Bearer ${token}`,
-    //       Authorization: token,
-    //     },
-    //   }),
-    // }),
     getUserByToken: builder.mutation({
       query: (token) => ({
         url: `/v1/getuser`,
