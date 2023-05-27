@@ -1,20 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiMenuKebab } from "react-icons/ci";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useGetUsersMutation } from "../features/auth/userApi";
 import Loader from "./Loader";
+import { useGetAllChatsMutation } from "../features/chat/chatApi";
+import Mychat from "./Mychat";
+import SearchFriend from "./SearchFriend";
+import { setChats } from "../features/chat/chatSlice";
 
 const ChatLeftBar = () => {
   const [getUsers, { data, isLoading }] = useGetUsersMutation();
+  const [getAllChats, { isLoading: chatLoading }] = useGetAllChatsMutation();
   const [searchText, setSearchText] = useState(false);
   const [error, setError] = useState("");
+  const userChats = useSelector((state) => state.chat);
   const userData = useSelector((state) => state.user);
-  console.log(userData);
+  const token = userData?.user?.token;
+
+  const dispatch = useDispatch();
 
   const handleSearch = (e) => {
     const text = e.target.value;
-    const token = userData?.user?.token;
-
     setSearchText(text);
     getUsers({ token: token, search: text })
       .unwrap()
@@ -28,23 +34,38 @@ const ChatLeftBar = () => {
 
   let seachContent;
   if (data) {
-    seachContent = data?.data?.map((d) => {
-      return (
-        <div
-          className="flex items-center gap-2 p-3 hover:bg-gray-700 cursor-pointer"
-          key={d._id}
-          onClick={() => console.log(d._id)}
-        >
-          <img src={d?.picture} alt="" className="max-w-[30px] rounded-full" />
-          <p className="capitalize text-sm">{d?.name}</p>
-        </div>
-      );
-    });
+    seachContent = data.data?.map((d) => (
+      <SearchFriend key={d._id} data={d} setState={setSearchText} />
+    ));
   } else if (isLoading) {
     seachContent = <Loader />;
   } else if (error) {
     seachContent = <p className="text-red-500">{error}</p>;
   }
+
+  let chatContent;
+
+  if (chatLoading) {
+    chatContent = <Loader />;
+  }
+  if (userChats) {
+    chatContent = userChats.data?.map((chat) => (
+      <Mychat key={chat._id} data={chat} />
+    ));
+  }
+  if (userChats?.data?.length === 0) {
+    chatContent = (
+      <p className="text-sm px-2 text-gray-500">
+        No chats available. Search and add friends
+      </p>
+    );
+  }
+
+  useEffect(() => {
+    getAllChats(token).then((res) => {
+      dispatch(setChats(res.data.data));
+    });
+  }, [getAllChats, token, dispatch]);
 
   return (
     <>
@@ -79,26 +100,7 @@ const ChatLeftBar = () => {
               {seachContent}
             </div>
           ) : (
-            <div>
-              <div className="mt-8">
-                <div className="grid grid-cols-12 px-2">
-                  <img
-                    src={require("../img/avatar.png")}
-                    alt=""
-                    className="w-[40px] col-span-2"
-                  />
-                  <div className="col-span-10 flex justify-between items-center gap-2 border-b border-slate-800">
-                    <div className="text-start">
-                      <h5>Shamim Hossain</h5>
-                      <p className="text-sm text-slate-500">
-                        Lorem ipsum dolor sit amet.
-                      </p>
-                    </div>
-                    <p className="text-sm text-slate-500">3:10 PM</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div>{chatContent}</div>
           )}
         </div>
       </div>

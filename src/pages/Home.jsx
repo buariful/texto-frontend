@@ -1,19 +1,16 @@
 import React, { useRef, useState, useEffect } from "react";
-import {
-  useGetUserByTokenMutation,
-  useLoginMutation,
-  useSignUpMutation,
-} from "../features/auth/userApi";
+import { useLoginMutation, useSignUpMutation } from "../features/auth/userApi";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../features/auth/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const Home = () => {
   const navigate = useNavigate();
-  const [getUserByToken] = useGetUserByTokenMutation();
+  // const [getUserByToken] = useGetUserByTokenMutation();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.user);
-  const token = JSON.parse(localStorage.getItem("auth"));
+  const userData = useSelector((state) => state.user.user);
+
+  // const token = JSON.parse(localStorage.getItem("auth"));
 
   // =============signUp and login form states =========
   const [login] = useLoginMutation();
@@ -50,19 +47,25 @@ const Home = () => {
     }
   };
 
+  // useEffect(() => {
+  //   if (token) {
+  //     getUserByToken(token)
+  //       .unwrap()
+  //       .then((res) => {
+  //         dispatch(setUser(res));
+  //       })
+  //       .then((res) => navigate("/chat"))
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   }
+  // }, [dispatch, getUserByToken, token]);
+
   useEffect(() => {
-    if (token) {
-      getUserByToken(token)
-        .unwrap()
-        .then((res) => {
-          dispatch(setUser(res));
-        })
-        .then((res) => navigate("/chat"))
-        .catch((err) => {
-          console.log(err);
-        });
+    if (userData) {
+      navigate("/chat");
     }
-  }, [dispatch, getUserByToken, token]);
+  }, [navigate, userData]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -77,13 +80,11 @@ const Home = () => {
       .unwrap()
       .then((res) => {
         dispatch(setUser(res));
-        console.log(res);
         localStorage.setItem("auth", JSON.stringify(res?.token));
         navigate("/chat");
       })
       .catch((err) => {
         setLoginError(err?.data?.message);
-        console.log(err);
       });
   };
 
