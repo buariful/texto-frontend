@@ -7,6 +7,7 @@ import { useGetAllChatsMutation } from "../features/chat/chatApi";
 import Mychat from "./Mychat";
 import SearchFriend from "./SearchFriend";
 import { setChats } from "../features/chat/chatSlice";
+import GroupModal from "./GroupModal";
 
 const ChatLeftBar = () => {
   const [getUsers, { data, isLoading }] = useGetUsersMutation();
@@ -77,9 +78,39 @@ const ChatLeftBar = () => {
               alt=""
               className="w-[40px]"
             />
-            <button className="text-white text-xl">
-              <CiMenuKebab />
-            </button>
+            {/* <div className="dropdown">
+              <label tabIndex={0} className="btn m-1">
+                Click
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li>Item 1</li>
+                <li>Item 2</li>
+              </ul>
+            </div> */}
+            <div className="dropdown">
+              <button className="text-white text-xl" tabIndex={0}>
+                <CiMenuKebab />
+              </button>
+              <ul
+                tabIndex={0}
+                className="dropdown-content w-52 bg-gray-700 shadow shadow-gray-600 rounded p-3 text-sm "
+              >
+                {/* <li htmlFor="my-modal">Item 1</li> */}
+                <li>
+                  <label
+                    htmlFor="my-modal"
+                    className="block hover:bg-slate-800 py-2 cursor-pointer"
+                  >
+                    Create group
+                  </label>
+                </li>
+                <li>Item 2</li>
+              </ul>
+            </div>
+            <GroupModal />
           </div>
 
           <div className="my-2">
@@ -104,6 +135,12 @@ const ChatLeftBar = () => {
           )}
         </div>
       </div>
+
+      {/* <label htmlFor="my-modal" className="btn">
+        open modal
+      </label> */}
+
+      {/* Put this part before </body> tag */}
     </>
   );
 };
