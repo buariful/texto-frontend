@@ -22,7 +22,11 @@ const SearchFriend = ({ data, setState }) => {
       key={_id}
       onClick={handleAddFriend}
     >
-      <img src={picture} alt="" className="max-w-[30px] rounded-full" />
+      <img
+        src={picture}
+        alt=""
+        className="max-w-[35px] max-h-[35px] rounded-full"
+      />
       <p className="capitalize text-sm">{name}</p>
     </div>
   );

@@ -45,7 +45,6 @@ const ChatLeftBar = () => {
   }
 
   let chatContent;
-
   if (chatLoading) {
     chatContent = <Loader />;
   }

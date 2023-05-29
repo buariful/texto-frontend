@@ -23,7 +23,22 @@ export const chatApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    createGroup: builder.mutation({
+      query: ({ token, data }) => ({
+        url: "/v1/group",
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetAllChatsMutation, useAccesOneChatMutation } = chatApi;
+export const {
+  useGetAllChatsMutation,
+  useAccesOneChatMutation,
+  useCreateGroupMutation,
+} = chatApi;
