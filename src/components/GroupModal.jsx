@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
+import { useSelector } from "react-redux";
+import useSearchUser from "../utils/useSearchUser";
 
 const GroupModal = () => {
+  const { data, isLoading, error } = useSelector((state) => state.searchUser);
+  const [inputText, setInputText] = useState("");
   const [friends, setFriends] = useState([
     { id: 1, name: "a" },
     { id: 2, name: "b" },
@@ -25,6 +29,11 @@ const GroupModal = () => {
       })}
     </div>
   );
+
+  const handleSearch = (e) => {
+    setInputText(e.target.value);
+  };
+
   return (
     <>
       <input type="checkbox" id="my-modal" className="modal-toggle" />
@@ -38,7 +47,8 @@ const GroupModal = () => {
             type="text"
             placeholder="Type here"
             className="w-full max-w-xs font-semibold text-sm bg-gray-600 text-white px-3 py-2 rounded focus:outline-slate-700 focus:border-0 mb-1"
-            // onChange={handleSearch}
+            value={inputText}
+            onChange={handleSearch}
           />
 
           <div className="bg-slate-700 p-2 mt-2">
