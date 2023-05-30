@@ -43,7 +43,7 @@ const ChatMessages = () => {
   if (data) {
     messages = (
       <div>
-        {data.map((msg) => {
+        {data.map((msg, i) => {
           if (msg?.sender?._id === user?.data?._id) {
             return (
               <div className="chat chat-end" key={msg._id}>
