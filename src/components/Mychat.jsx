@@ -7,25 +7,28 @@ import {
   setMsgLoading,
 } from "../features/messages/messageSlice";
 
-const Mychat = ({ data, state, setState }) => {
+const Mychat = ({ data }) => {
   const userData = useSelector((state) => state.user?.user);
+  const chatId = useSelector((state) => state.message?.chatId);
   const [getAllMessages] = useGetAllMessagesMutation();
   const dispatch = useDispatch();
 
   const handleShowMessages = () => {
-    setState(data._id);
-
     let apiCallData = {
       // token, chatId
       token: userData?.token,
       chatId: data._id,
     };
 
-    dispatch(setMsgLoading(true));
+    dispatch(setMsgLoading());
     getAllMessages(apiCallData)
       .unwrap()
-      .then((res) => dispatch(setMsgData(res?.data)))
-      .catch((err) => dispatch(setMsgError(err?.data?.message)));
+      .then((res) =>
+        dispatch(setMsgData({ data: res?.data, chatId: data._id }))
+      )
+      .catch((err) =>
+        dispatch(setMsgError({ error: err?.data?.message, chatId: data._id }))
+      );
   };
 
   let chats;
@@ -33,7 +36,7 @@ const Mychat = ({ data, state, setState }) => {
     chats = (
       <div
         className={`grid grid-cols-12  items-center py-2 px-2 cursor-pointer hover:bg-[#202C33] rounded-2xl ${
-          state === data._id && "bg-[#202C33]"
+          chatId === data._id && "bg-[#202C33]"
         }`}
         onClick={handleShowMessages}
       >
@@ -64,7 +67,7 @@ const Mychat = ({ data, state, setState }) => {
     chats = (
       <div
         className={`grid grid-cols-12 py-2 px-2 cursor-pointer hover:bg-[#202C33] items-center rounded-2xl ${
-          state === data._id && "bg-[#202C33]"
+          chatId === data._id && "bg-[#202C33]"
         } `}
         onClick={handleShowMessages}
       >

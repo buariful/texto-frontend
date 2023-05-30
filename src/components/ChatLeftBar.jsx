@@ -14,11 +14,9 @@ const ChatLeftBar = () => {
   const [getAllChats, { isLoading: chatLoading }] = useGetAllChatsMutation();
   const [searchText, setSearchText] = useState(false);
   const [error, setError] = useState("");
-  const [activeChat, setActiveChat] = useState("");
   const userChats = useSelector((state) => state.chat);
   const userData = useSelector((state) => state.user);
   const token = userData?.user?.token;
-
   const dispatch = useDispatch();
 
   const handleSearch = (e) => {
@@ -51,12 +49,7 @@ const ChatLeftBar = () => {
   }
   if (userChats) {
     chatContent = userChats.data?.map((chat) => (
-      <Mychat
-        key={chat._id}
-        data={chat}
-        state={activeChat}
-        setState={setActiveChat}
-      />
+      <Mychat key={chat._id} data={chat} />
     ));
   }
   if (userChats?.data?.length === 0) {

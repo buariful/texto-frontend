@@ -12,7 +12,18 @@ export const messageApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    sendMessage: builder.mutation({
+      query: ({ token, data }) => ({
+        url: "/v1/message",
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetAllMessagesMutation } = messageApi;
+export const { useGetAllMessagesMutation, useSendMessageMutation } = messageApi;
