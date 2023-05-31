@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "./Loader";
 import { FaTelegram } from "react-icons/fa";
 import { useSendMessageMutation } from "../features/messages/messageApi";
 import { addNewMsg } from "../features/messages/messageSlice";
 
-const ChatMessages = () => {
+const ChatMessages = ({ socket }) => {
   const { isLoading, error, data, chatId } = useSelector(
     (state) => state.message
   );
   const user = useSelector((state) => state.user?.user);
   const [sendMessage] = useSendMessageMutation();
   const [msgText, setMsgText] = useState("");
-
   const dispatch = useDispatch();
+  const [isSocketConnected, setisSocketConnected] = useState(false);
 
   const sendMessageHandle = () => {
     // { content, chatId }
@@ -22,10 +22,12 @@ const ChatMessages = () => {
       content: msgText,
       chatId,
     };
-
     sendMessage({ token: user.token, data })
       .unwrap()
-      .then((res) => dispatch(addNewMsg(res.data)))
+      .then((res) => {
+        dispatch(addNewMsg(res.data));
+        socket.emit("new message", res.data);
+      })
       .catch((err) => console.log(err));
   };
 
@@ -79,6 +81,16 @@ const ChatMessages = () => {
     );
   }
 
+  useEffect(() => {
+    socket.emit("setup", user.data);
+    socket.on("connection", () => setisSocketConnected(true));
+  }, []);
+
+  useEffect(() => {
+    socket.on("message recieved", (newMessageRecieved) => {
+      console.log(newMessageRecieved);
+    });
+  });
   return (
     <>
       <div className="bg-green-200 relative w-full h-screen overflow-x-hidden">
@@ -101,6 +113,7 @@ const ChatMessages = () => {
               }
             }}
           />
+
           <button
             onClick={sendMessageHandle}
             disabled={!chatId}

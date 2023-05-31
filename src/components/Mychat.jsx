@@ -7,7 +7,7 @@ import {
   setMsgLoading,
 } from "../features/messages/messageSlice";
 
-const Mychat = ({ data }) => {
+const Mychat = ({ data, socket }) => {
   const userData = useSelector((state) => state.user?.user);
   const chatId = useSelector((state) => state.message?.chatId);
   const [getAllMessages] = useGetAllMessagesMutation();
@@ -15,7 +15,6 @@ const Mychat = ({ data }) => {
 
   const handleShowMessages = () => {
     let apiCallData = {
-      // token, chatId
       token: userData?.token,
       chatId: data._id,
     };
@@ -29,6 +28,8 @@ const Mychat = ({ data }) => {
       .catch((err) =>
         dispatch(setMsgError({ error: err?.data?.message, chatId: data._id }))
       );
+
+    socket.emit("join chat", data._id);
   };
 
   let chats;
@@ -53,7 +54,6 @@ const Mychat = ({ data }) => {
               Lorem ipsum dolor sit amet.
             </p>
           </div>
-          {/* <p className="text-sm text-slate-500">{time}</p> */}
         </div>
       </div>
     );

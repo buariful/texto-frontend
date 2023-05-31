@@ -28,7 +28,6 @@ const Home = () => {
     password: "",
   });
 
-  console.log(actionLoading);
   // ========== for form tab activity =========
   const loginBtn = useRef(null);
   const regBtn = useRef(null);

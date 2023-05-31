@@ -9,7 +9,7 @@ import SearchFriend from "./SearchFriend";
 import { setChats } from "../features/chat/chatSlice";
 import GroupModal from "./GroupModal";
 
-const ChatLeftBar = () => {
+const ChatLeftBar = ({ socket }) => {
   const [getUsers, { data, isLoading }] = useGetUsersMutation();
   const [getAllChats, { isLoading: chatLoading }] = useGetAllChatsMutation();
   const [searchText, setSearchText] = useState(false);
@@ -49,7 +49,7 @@ const ChatLeftBar = () => {
   }
   if (userChats) {
     chatContent = userChats.data?.map((chat) => (
-      <Mychat key={chat._id} data={chat} />
+      <Mychat key={chat._id} data={chat} socket={socket} />
     ));
   }
   if (userChats?.data?.length === 0) {
