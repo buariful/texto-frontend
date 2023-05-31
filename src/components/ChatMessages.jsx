@@ -5,7 +5,8 @@ import { FaTelegram } from "react-icons/fa";
 import { useSendMessageMutation } from "../features/messages/messageApi";
 import { addNewMsg } from "../features/messages/messageSlice";
 
-const ChatMessages = ({ socket }) => {
+const ChatMessages = () => {
+  const socket = useSelector((state) => state.socket?.socket);
   const { isLoading, error, data, chatId } = useSelector(
     (state) => state.message
   );

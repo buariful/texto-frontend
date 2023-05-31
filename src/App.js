@@ -3,18 +3,18 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import useAuthCheck from "./utils/useAuthCheck";
-import { io } from "socket.io-client";
+import useSetSocket from "./utils/useSetSocket";
 
-const socket = io("http://localhost:5000");
 function App() {
   useAuthCheck();
+  useSetSocket();
 
   return (
     <div className="App">
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<Chat socket={socket} />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
       </Router>
     </div>
