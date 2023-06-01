@@ -17,7 +17,6 @@ const ChatLeftBar = () => {
   const userChats = useSelector((state) => state.chat);
   const userData = useSelector((state) => state.user);
   const token = userData?.user?.token;
-
   const dispatch = useDispatch();
 
   const handleSearch = (e) => {

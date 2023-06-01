@@ -8,10 +8,11 @@ import { addSingleChat } from "../features/chat/chatSlice";
 
 const GroupModal = () => {
   const [getUsers, { data, isLoading, error }] = useGetUsersMutation();
-  const token = useSelector((state) => state.user.user.token);
+  const token = useSelector((state) => state.user?.user?.token);
   const [friends, setFriends] = useState([]);
   const [inputText, setInputText] = useState("");
   const [groupName, setGroupName] = useState("");
+  const [groupError, setGroupError] = useState("");
   const [createGroup] = useCreateGroupMutation();
   const dispatch = useDispatch();
 
@@ -31,6 +32,7 @@ const GroupModal = () => {
   };
 
   const handleCreateGroup = () => {
+    setGroupError("");
     const users = friends.map((friend) => friend.id);
     const data = {
       users: users,
@@ -40,7 +42,11 @@ const GroupModal = () => {
     createGroup({ token, data })
       .unwrap()
       .then((res) => dispatch(addSingleChat(res.data)))
-      .catch((err) => console.log(err));
+      .catch((err) => setGroupError(err?.data?.message));
+
+    setGroupName("");
+    setInputText("");
+    setFriends([]);
   };
 
   const selectedFriends = (
@@ -104,6 +110,7 @@ const GroupModal = () => {
           <h3 className="font-semibold text-sm mb-3">
             Search and select your friends
           </h3>
+          <p className="text-red-500 my-1 text-sm">{groupError}</p>
           {selectedFriends}
 
           <div className="flex justify-center items-center gap-3 mb-2">

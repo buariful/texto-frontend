@@ -13,6 +13,10 @@ const Home = () => {
   // const token = JSON.parse(localStorage.getItem("auth"));
 
   // =============signUp and login form states =========
+  const [actionLoading, setActionLoading] = useState({
+    loginLoading: false,
+    signUpLoading: false,
+  });
   const [login] = useLoginMutation();
   const [loginError, setLoginError] = useState("");
 
@@ -23,6 +27,7 @@ const Home = () => {
     email: "",
     password: "",
   });
+
   // ========== for form tab activity =========
   const loginBtn = useRef(null);
   const regBtn = useRef(null);
@@ -70,6 +75,7 @@ const Home = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     setLoginError("");
+    setActionLoading({ ...actionLoading, loginLoading: true });
 
     const data = {
       email: e.target.email.value,
@@ -81,26 +87,31 @@ const Home = () => {
       .then((res) => {
         dispatch(setUser(res));
         localStorage.setItem("auth", JSON.stringify(res?.token));
+        setActionLoading({ ...actionLoading, loginLoading: false });
         navigate("/chat");
       })
       .catch((err) => {
         setLoginError(err?.data?.message);
+        setActionLoading({ ...actionLoading, loginLoading: false });
       });
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
     setSignError("");
+    setActionLoading({ ...actionLoading, signUpLoading: true });
 
     signUp(signUpData)
       .unwrap()
       .then((res) => {
         localStorage.setItem("auth", JSON.stringify(res?.token));
         dispatch(setUser(res));
+        setActionLoading({ ...actionLoading, signUpLoading: false });
         navigate("/chat");
       })
       .catch((err) => {
         setSignError(err?.data?.message);
+        setActionLoading({ ...actionLoading, signUpLoading: false });
       });
   };
 
@@ -156,7 +167,14 @@ const Home = () => {
             className="input input-bordered input-secondary w-full max-w-xs mb-2 "
           />
 
-          <button type="submit" className="btn block w-full max-w-xs m-auto">
+          <button
+            type="submit"
+            className={`btn w-full max-w-xs ${
+              actionLoading.loginLoading
+                ? "bg-[#444952b0] text-[#ffffff75] loading"
+                : ""
+            }`}
+          >
             Submit
           </button>
         </form>
@@ -204,7 +222,14 @@ const Home = () => {
             className="input input-bordered input-secondary w-full max-w-xs mb-2 "
           />
 
-          <button type="submit" className={`btn block w-full max-w-xs m-auto`}>
+          <button
+            type="submit"
+            className={`btn w-full max-w-xs ${
+              actionLoading.signUpLoading
+                ? "bg-[#444952b0] text-[#ffffff75] loading"
+                : ""
+            }`}
+          >
             Submit
           </button>
         </form>

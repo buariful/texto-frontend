@@ -52,3 +52,5 @@ export const {
   useGetUsersMutation,
   useGetUserByTokenMutation,
 } = userApi;
+
+export const getUsersMutation = userApi.endpoints.getUsers.useMutation;
