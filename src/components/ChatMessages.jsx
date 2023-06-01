@@ -40,7 +40,7 @@ const ChatMessages = () => {
     setMsgText(e.target.value);
 
     if (!isSocketConnected) return;
-    if (!typing) {
+    if (!typing && msgText) {
       setTyping(true);
       socket.emit("typing", chatId);
     }
