@@ -3,11 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import useAuthCheck from "./utils/useAuthCheck";
-import useSetSocket from "./utils/useSetSocket";
 
 function App() {
   useAuthCheck();
-  useSetSocket();
 
   return (
     <div className="App">

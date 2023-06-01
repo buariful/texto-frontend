@@ -6,11 +6,11 @@ import {
   setMsgError,
   setMsgLoading,
 } from "../features/messages/messageSlice";
+import socket from "../socket";
 
 const Mychat = ({ data }) => {
   const userData = useSelector((state) => state.user?.user);
   const chatId = useSelector((state) => state.message?.chatId);
-  const socket = useSelector((state) => state.socket?.socket);
   const [getAllMessages] = useGetAllMessagesMutation();
   const dispatch = useDispatch();
 

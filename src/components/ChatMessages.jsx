@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "./Loader";
 import { FaTelegram } from "react-icons/fa";
 import { useSendMessageMutation } from "../features/messages/messageApi";
 import { addNewMsg } from "../features/messages/messageSlice";
+import socket from "../socket";
 
 const ChatMessages = () => {
-  const socket = useSelector((state) => state.socket?.socket);
   const { isLoading, error, data, chatId } = useSelector(
     (state) => state.message
   );
@@ -15,9 +15,12 @@ const ChatMessages = () => {
   const [msgText, setMsgText] = useState("");
   const dispatch = useDispatch();
   const [isSocketConnected, setisSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [istyping, setIsTyping] = useState(false);
+  const msgIdRef = useRef();
 
   const sendMessageHandle = () => {
-    // { content, chatId }
+    socket.emit("stop typing", chatId);
     setMsgText("");
     let data = {
       content: msgText,
@@ -30,6 +33,28 @@ const ChatMessages = () => {
         socket.emit("new message", res.data);
       })
       .catch((err) => console.log(err));
+  };
+
+  const handleWriting = (e) => {
+    setMsgText(e.target.value);
+
+    if (!isSocketConnected) return;
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", chatId);
+    }
+
+    const lastTypingTime = new Date().getTime();
+    const timerLength = 3000;
+    setTimeout(() => {
+      const timeNow = new Date().getTime();
+      const timeDiff = timeNow - lastTypingTime;
+
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop typing", chatId);
+        setTyping(false);
+      }
+    }, timerLength);
   };
 
   let messages;
@@ -84,18 +109,28 @@ const ChatMessages = () => {
 
   useEffect(() => {
     socket.emit("setup", user.data);
-    socket.on("connection", () => setisSocketConnected(true));
-  }, []);
+    socket.on("connected", () => setisSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+  }, [user.data]);
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
-      console.log(newMessageRecieved);
+      // msgIdRef.current = msgId;
+      if (newMessageRecieved._id !== msgIdRef.current) {
+        dispatch(addNewMsg(newMessageRecieved));
+        msgIdRef.current = newMessageRecieved._id;
+      }
     });
+    return () => {
+      socket.off("message received");
+    };
   });
   return (
     <>
       <div className="bg-green-200 relative w-full h-screen overflow-x-hidden">
         <div className="bg-gray-900 overflow-y-auto h-[90vh] px-5">
+          {istyping && <button className="btn loading">sss</button>}
           {messages}
         </div>
 
@@ -105,7 +140,7 @@ const ChatMessages = () => {
             className={`w-full max-w-2xl font-semibold text-sm bg-slate-900 text-white px-3 py-1 h-10 rounded focus:outline-slate-700 focus:border-0 ${
               chatId ? "" : "cursor-not-allowed"
             }`}
-            onChange={(e) => setMsgText(e.target.value)}
+            onChange={handleWriting}
             value={msgText}
             disabled={!chatId}
             onKeyUp={(e) => {
