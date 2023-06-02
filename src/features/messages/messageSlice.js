@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 let initialState = {
   isLoading: false,
   error: "Please Select a Friend or a Group",
-  data: null,
+  data: [],
   chatId: null,
 };
 
@@ -14,13 +14,13 @@ const messageSlice = createSlice({
     setMsgLoading: (state) => {
       state.isLoading = true;
       state.error = null;
-      state.data = null;
+      state.data = [];
       state.chatId = null;
     },
     setMsgError: (state, action) => {
       state.isLoading = false;
       state.error = action.payload.error;
-      state.data = null;
+      state.data = [];
       state.chatId = action.payload.chatId;
     },
     setMsgData: (state, action) => {

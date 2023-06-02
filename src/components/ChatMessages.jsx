@@ -15,12 +15,10 @@ const ChatMessages = () => {
   const [msgText, setMsgText] = useState("");
   const dispatch = useDispatch();
   const [isSocketConnected, setisSocketConnected] = useState(false);
-  const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const msgIdRef = useRef();
 
   const sendMessageHandle = () => {
-    socket.emit("stop typing", chatId);
     setMsgText("");
     let data = {
       content: msgText,
@@ -35,27 +33,40 @@ const ChatMessages = () => {
       .catch((err) => console.log(err));
   };
 
+  let typingTimeout = null;
   const handleWriting = (e) => {
     setMsgText(e.target.value);
 
-    if (!isSocketConnected) return;
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", chatId);
-    }
-
-    const lastTypingTime = new Date().getTime();
-    const timerLength = 3000;
-    setTimeout(() => {
-      const timeNow = new Date().getTime();
-      const timeDiff = timeNow - lastTypingTime;
-
-      if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", chatId);
-        setTyping(false);
-      }
-    }, timerLength);
+    socket.emit("typing", chatId);
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit("stop typing", chatId);
+    }, 3000);
   };
+
+  useEffect(() => {
+    socket.emit("setup", user.data);
+    socket.on("connected", () => setisSocketConnected(true));
+    socket.on("typing", () => {
+      setIsTyping(true);
+    });
+    socket.on("stop typing", () => {
+      setIsTyping(false);
+    });
+  }, [user.data, chatId]);
+
+  useEffect(() => {
+    socket.on("message recieved", (newMessageRecieved) => {
+      if (newMessageRecieved._id !== msgIdRef.current) {
+        dispatch(addNewMsg(newMessageRecieved));
+        msgIdRef.current = newMessageRecieved._id;
+      }
+    });
+
+    return () => {
+      socket.off("message received");
+    };
+  });
 
   let messages;
   if (isLoading) {
@@ -68,7 +79,7 @@ const ChatMessages = () => {
       </div>
     );
   }
-  if (data) {
+  if (data.length > 0) {
     messages = (
       <div>
         {data.map((msg, i) => {
@@ -106,31 +117,15 @@ const ChatMessages = () => {
       </div>
     );
   }
-
-  useEffect(() => {
-    socket.emit("setup", user.data);
-    socket.on("connected", () => setisSocketConnected(true));
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
-  }, [user.data]);
-
-  useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
-      // msgIdRef.current = msgId;
-      if (newMessageRecieved._id !== msgIdRef.current) {
-        dispatch(addNewMsg(newMessageRecieved));
-        msgIdRef.current = newMessageRecieved._id;
-      }
-    });
-    return () => {
-      socket.off("message received");
-    };
-  });
   return (
     <>
       <div className="bg-green-200 relative w-full h-screen overflow-x-hidden">
         <div className="bg-gray-900 overflow-y-auto h-[90vh] px-5">
-          {istyping && <button className="btn loading">sss</button>}
+          {istyping && (
+            <div className="chat chat-start">
+              <div className="chat-bubble text-sm text-gray-500">typing...</div>
+            </div>
+          )}
           {messages}
         </div>
 
@@ -141,6 +136,10 @@ const ChatMessages = () => {
               chatId ? "" : "cursor-not-allowed"
             }`}
             onChange={handleWriting}
+            onBlur={() => {
+              clearTimeout(typingTimeout);
+              socket.emit("stop typing", chatId);
+            }}
             value={msgText}
             disabled={!chatId}
             onKeyUp={(e) => {
