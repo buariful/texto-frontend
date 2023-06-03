@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetAllMessagesMutation } from "../features/messages/messageApi";
 import {
@@ -7,19 +7,31 @@ import {
   setMsgLoading,
 } from "../features/messages/messageSlice";
 import socket from "../socket";
+import { useDeleteNotificationMutation } from "../features/notification/notificationApi";
+import { updateNotifications } from "../features/chat/chatSlice";
 
 const Mychat = ({ data }) => {
   const userData = useSelector((state) => state.user?.user);
   const chatId = useSelector((state) => state.message?.chatId);
+  const notification = useSelector((state) => state.chat?.notification);
+  const [msgNotification, setMsgNotification] = useState([]);
   const [getAllMessages] = useGetAllMessagesMutation();
+  const [deleteNotification] = useDeleteNotificationMutation();
   const dispatch = useDispatch();
 
   const handleShowMessages = () => {
+    deleteNotification({ token: userData?.token, chatId: data._id });
+
+    // if (notification.length > 0) {
+    //   dispatch(
+    //     updateNotifications({ chatId: data._id, userId: userData?.data?._id })
+    //   );
+    // }
+
     let apiCallData = {
       token: userData?.token,
       chatId: data._id,
     };
-
     dispatch(setMsgLoading());
     getAllMessages(apiCallData)
       .unwrap()
@@ -33,7 +45,20 @@ const Mychat = ({ data }) => {
     socket.emit("join chat", data._id);
   };
 
+  useEffect(() => {
+    if (notification) {
+      const userNotifications = notification.filter(
+        (x) => x.chatId === data._id && x.userId === userData.data._id
+      );
+      // if (userNotifications && userNotifications.length > 0) {
+      //   setMsgNotification(userNotifications);
+      // }
+      setMsgNotification(userNotifications);
+    }
+  }, [notification, data._id, userData.data._id]);
+
   let chats;
+  let recentMsg = data?.latestMessage?.content;
   if (data.isGroupChat) {
     chats = (
       <div
@@ -52,18 +77,22 @@ const Mychat = ({ data }) => {
           <div className="text-start">
             <h5>{data.chatName}</h5>
             <p className="text-sm text-slate-500">
-              Lorem ipsum dolor sit amet.
+              {recentMsg &&
+                (recentMsg.length > 25
+                  ? recentMsg.slice(0, 25) + "..."
+                  : recentMsg)}
             </p>
           </div>
+          {msgNotification && msgNotification.length > 0 && (
+            <p className="text-[9px] text-whie bg-red-700 px-2 py-1  rounded-full">
+              {msgNotification.length}
+            </p>
+          )}
         </div>
       </div>
     );
   } else {
     const user = data.users.find((user) => user._id !== userData?.data?._id);
-    const time = new Date(user.updatedAt).toLocaleTimeString([], {
-      hour: "numeric",
-      minute: "2-digit",
-    });
 
     chats = (
       <div
@@ -81,10 +110,18 @@ const Mychat = ({ data }) => {
           <div className="text-start">
             <h5>{user.name}</h5>
             <p className="text-sm text-slate-500">
-              Lorem ipsum dolor sit amet.
+              {recentMsg &&
+                (recentMsg.length > 25
+                  ? recentMsg.slice(0, 25) + "..."
+                  : recentMsg)}
             </p>
           </div>
-          <p className="text-sm text-slate-500">{time}</p>
+
+          {msgNotification && msgNotification.length > 0 && (
+            <p className="text-[9px] text-whie bg-red-700 px-2 py-1  rounded-full">
+              {msgNotification.length}
+            </p>
+          )}
         </div>
       </div>
     );

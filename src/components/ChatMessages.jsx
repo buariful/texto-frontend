@@ -57,9 +57,18 @@ const ChatMessages = () => {
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
-      if (newMessageRecieved._id !== msgIdRef.current) {
-        dispatch(addNewMsg(newMessageRecieved));
-        msgIdRef.current = newMessageRecieved._id;
+      let notificationData;
+      let msgData = {};
+      for (const key in newMessageRecieved) {
+        if (key === "notifications") {
+          notificationData = newMessageRecieved[key];
+        } else {
+          msgData[key] = newMessageRecieved[key];
+        }
+      }
+      if (msgData._id !== msgIdRef.current) {
+        dispatch(addNewMsg(msgData));
+        msgIdRef.current = msgData._id;
       }
     });
 
@@ -79,7 +88,7 @@ const ChatMessages = () => {
       </div>
     );
   }
-  if (data.length > 0) {
+  if (data.length > 0 && chatId) {
     messages = (
       <div>
         {data.map((msg, i) => {

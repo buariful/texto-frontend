@@ -6,12 +6,14 @@ import Loader from "./Loader";
 import { useGetAllChatsMutation } from "../features/chat/chatApi";
 import Mychat from "./Mychat";
 import SearchFriend from "./SearchFriend";
-import { setChats } from "../features/chat/chatSlice";
+import { setChats, setNotification } from "../features/chat/chatSlice";
 import GroupModal from "./GroupModal";
+import { useGetAllNotificationMutation } from "../features/notification/notificationApi";
 
 const ChatLeftBar = () => {
   const [getUsers, { data, isLoading }] = useGetUsersMutation();
   const [getAllChats, { isLoading: chatLoading }] = useGetAllChatsMutation();
+  const [getAllNotification] = useGetAllNotificationMutation();
   const [searchText, setSearchText] = useState(false);
   const [error, setError] = useState("");
   const userChats = useSelector((state) => state.chat);
@@ -31,6 +33,16 @@ const ChatLeftBar = () => {
         setError(err.data.message);
       });
   };
+  useEffect(() => {
+    getAllChats(token).then((res) => {
+      dispatch(setChats(res.data.data));
+    });
+    getAllNotification(token)
+      .then((res) => {
+        dispatch(setNotification(res.data?.data));
+      })
+      .catch((err) => console.log(err));
+  }, [getAllChats, getAllNotification, token, dispatch]);
 
   let seachContent;
   if (data) {
@@ -47,7 +59,7 @@ const ChatLeftBar = () => {
   if (chatLoading) {
     chatContent = <Loader />;
   }
-  if (userChats) {
+  if (userChats?.data?.length > 0) {
     chatContent = userChats.data?.map((chat) => (
       <Mychat key={chat._id} data={chat} />
     ));
@@ -59,13 +71,6 @@ const ChatLeftBar = () => {
       </p>
     );
   }
-
-  useEffect(() => {
-    getAllChats(token).then((res) => {
-      dispatch(setChats(res.data.data));
-    });
-  }, [getAllChats, token, dispatch]);
-
   return (
     <>
       <div className="h-screen w-full bg-[#0000002e] pt-3 pb-4 ">
