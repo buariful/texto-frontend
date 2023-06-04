@@ -21,13 +21,11 @@ const Mychat = ({ data }) => {
 
   const handleShowMessages = () => {
     deleteNotification({ token: userData?.token, chatId: data._id });
-
-    // if (notification.length > 0) {
-    //   dispatch(
-    //     updateNotifications({ chatId: data._id, userId: userData?.data?._id })
-    //   );
-    // }
-
+    if (notification && notification.length > 0) {
+      dispatch(
+        updateNotifications({ chatId: data._id, userId: userData?.data?._id })
+      );
+    }
     let apiCallData = {
       token: userData?.token,
       chatId: data._id,
@@ -35,7 +33,7 @@ const Mychat = ({ data }) => {
     dispatch(setMsgLoading());
     getAllMessages(apiCallData)
       .unwrap()
-      .then((res) =>
+      .then(async (res) =>
         dispatch(setMsgData({ data: res?.data, chatId: data._id }))
       )
       .catch((err) =>

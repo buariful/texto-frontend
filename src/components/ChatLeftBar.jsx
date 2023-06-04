@@ -34,12 +34,15 @@ const ChatLeftBar = () => {
       });
   };
   useEffect(() => {
-    getAllChats(token).then((res) => {
-      dispatch(setChats(res.data.data));
-    });
+    getAllChats(token)
+      .then((res) => {
+        dispatch(setChats(res.data?.data));
+      })
+      .catch((err) => console.log(err));
     getAllNotification(token)
       .then((res) => {
         dispatch(setNotification(res.data?.data));
+        // console.log(res?.data?.data);
       })
       .catch((err) => console.log(err));
   }, [getAllChats, getAllNotification, token, dispatch]);

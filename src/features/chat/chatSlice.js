@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-let initialState = { data: [], notification: [] };
+let initialState = { notification: [], data: [] };
 const chatSlice = createSlice({
   name: "userChats",
   initialState,
@@ -12,10 +12,10 @@ const chatSlice = createSlice({
       state.data = [...state.data, action.payload];
     },
     setNotification: (state, action) => {
-      state.notification = action.payload;
+      state.notification = [...action.payload];
     },
     addSingleNotification: (state, action) => {
-      state.notification = action.payload;
+      state.notification = [...state.notification, ...action.payload];
     },
     updateNotifications: (state, action) => {
       const { chatId, userId } = action.payload;

@@ -5,6 +5,8 @@ import { FaTelegram } from "react-icons/fa";
 import { useSendMessageMutation } from "../features/messages/messageApi";
 import { addNewMsg } from "../features/messages/messageSlice";
 import socket from "../socket";
+import { addSingleNotification } from "../features/chat/chatSlice";
+// import { useDeleteNotificationMutation } from "../features/notification/notificationApi";
 
 const ChatMessages = () => {
   const { isLoading, error, data, chatId } = useSelector(
@@ -13,11 +15,12 @@ const ChatMessages = () => {
   const user = useSelector((state) => state.user?.user);
   const [sendMessage] = useSendMessageMutation();
   const [msgText, setMsgText] = useState("");
+  const [roomId, setRoomId] = useState("");
   const dispatch = useDispatch();
   const [isSocketConnected, setisSocketConnected] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const msgIdRef = useRef();
-
+  // const [deleteNotification] = useDeleteNotificationMutation();
   const sendMessageHandle = () => {
     setMsgText("");
     let data = {
@@ -37,18 +40,21 @@ const ChatMessages = () => {
   const handleWriting = (e) => {
     setMsgText(e.target.value);
 
-    socket.emit("typing", chatId);
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(() => {
-      socket.emit("stop typing", chatId);
-    }, 3000);
+    if (isSocketConnected) {
+      socket.emit("typing", chatId);
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        socket.emit("stop typing", chatId);
+      }, 3000);
+    }
   };
 
   useEffect(() => {
     socket.emit("setup", user.data);
     socket.on("connected", () => setisSocketConnected(true));
-    socket.on("typing", () => {
+    socket.on("typing", (room) => {
       setIsTyping(true);
+      setRoomId(room);
     });
     socket.on("stop typing", () => {
       setIsTyping(false);
@@ -68,6 +74,7 @@ const ChatMessages = () => {
       }
       if (msgData._id !== msgIdRef.current) {
         dispatch(addNewMsg(msgData));
+        dispatch(addSingleNotification(notificationData));
         msgIdRef.current = msgData._id;
       }
     });
@@ -91,8 +98,8 @@ const ChatMessages = () => {
   if (data.length > 0 && chatId) {
     messages = (
       <div>
-        {data.map((msg, i) => {
-          if (msg?.sender?._id === user?.data?._id) {
+        {data.map((msg) => {
+          if (msg?.sender?._id === user?.data?._id && msg.chat._id === chatId) {
             return (
               <div className="chat chat-end" key={msg._id}>
                 {/* <div className="chat-image avatar">
@@ -107,7 +114,8 @@ const ChatMessages = () => {
                 </div> */}
               </div>
             );
-          } else {
+          }
+          if (msg?.sender?._id !== user?.data?._id && msg.chat._id === chatId) {
             return (
               <div className="chat chat-start" key={msg._id}>
                 <div className="chat-image avatar">
@@ -126,16 +134,17 @@ const ChatMessages = () => {
       </div>
     );
   }
+
   return (
     <>
       <div className="bg-green-200 relative w-full h-screen overflow-x-hidden">
         <div className="bg-gray-900 overflow-y-auto h-[90vh] px-5">
-          {istyping && (
+          {messages}
+          {istyping && roomId === chatId && (
             <div className="chat chat-start">
               <div className="chat-bubble text-sm text-gray-500">typing...</div>
             </div>
           )}
-          {messages}
         </div>
 
         <div className="w-full bg-gray-800 h-[10vh] flex items-center justify-center gap-5">

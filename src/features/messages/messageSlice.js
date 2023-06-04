@@ -13,9 +13,9 @@ const messageSlice = createSlice({
   reducers: {
     setMsgLoading: (state) => {
       state.isLoading = true;
-      state.error = null;
+      // state.error = null;
       state.data = [];
-      state.chatId = null;
+      // state.chatId = null;
     },
     setMsgError: (state, action) => {
       state.isLoading = false;
@@ -25,7 +25,7 @@ const messageSlice = createSlice({
     },
     setMsgData: (state, action) => {
       state.isLoading = false;
-      state.error = null;
+      // state.error = null;
       state.data = action.payload.data;
       state.chatId = action.payload.chatId;
     },
