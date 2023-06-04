@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetAllMessagesMutation } from "../features/messages/messageApi";
 import {
+  setChatId,
   setMsgData,
   setMsgError,
   setMsgLoading,
@@ -12,17 +13,19 @@ import { updateNotifications } from "../features/chat/chatSlice";
 
 const Mychat = ({ data }) => {
   const userData = useSelector((state) => state.user?.user);
+  console.log(userData?.data?._id);
+
   const chatId = useSelector((state) => state.message?.chatId);
-  const notification = useSelector((state) => state.chat?.notification);
+  const notification = useSelector((state) => state.chat.notification);
   const [msgNotification, setMsgNotification] = useState([]);
   const [getAllMessages] = useGetAllMessagesMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
   const dispatch = useDispatch();
 
-  const handleShowMessages = () => {
-    deleteNotification({ token: userData?.token, chatId: data._id });
+  const handleShowMessages = async () => {
+    await deleteNotification({ token: userData?.token, chatId: data._id });
     if (notification && notification.length > 0) {
-      dispatch(
+      await dispatch(
         updateNotifications({ chatId: data._id, userId: userData?.data?._id })
       );
     }
@@ -30,15 +33,28 @@ const Mychat = ({ data }) => {
       token: userData?.token,
       chatId: data._id,
     };
-    dispatch(setMsgLoading());
+    dispatch(setMsgLoading(true));
+    dispatch(setChatId(data._id));
     getAllMessages(apiCallData)
       .unwrap()
-      .then(async (res) =>
-        dispatch(setMsgData({ data: res?.data, chatId: data._id }))
-      )
-      .catch((err) =>
-        dispatch(setMsgError({ error: err?.data?.message, chatId: data._id }))
-      );
+      // .then(() => {
+      //   dispatch(setMsgLoading(false));
+      //   dispatch(setChatId(data._id));
+      // })
+      .then((res) => {
+        dispatch(setMsgLoading(false));
+        dispatch(setChatId(data._id));
+        dispatch(setMsgError(null));
+        dispatch(setMsgData(res.data));
+        //  dispatch(setMsgData({ data: res?.data, chatId: data._id }))
+      })
+      .catch((err) => {
+        dispatch(setMsgLoading(false));
+        dispatch(setChatId(data._id));
+        dispatch(setMsgData([]));
+        dispatch(setMsgError(err?.data?.message));
+        // setMsgError({ error: err?.data?.message, chatId: data._id })
+      });
 
     socket.emit("join chat", data._id);
   };
@@ -74,12 +90,19 @@ const Mychat = ({ data }) => {
         <div className="col-span-10 flex justify-between items-center gap-2 border-b border-slate-800">
           <div className="text-start">
             <h5>{data.chatName}</h5>
-            <p className="text-sm text-slate-500">
-              {recentMsg &&
-                (recentMsg.length > 25
-                  ? recentMsg.slice(0, 25) + "..."
-                  : recentMsg)}
-            </p>
+            {data?.latestMessage?.sender?.name && (
+              <p className="text-sm text-slate-500">
+                <span className="text-white text-[10px] capitalize">
+                  {userData?.data?._id === data?.latestMessage?.sender._id
+                    ? "You : "
+                    : data?.latestMessage?.sender?.name?.slice(0, 3) + " : "}
+                </span>
+                {recentMsg &&
+                  (recentMsg.length > 22
+                    ? recentMsg.slice(0, 22) + "..."
+                    : recentMsg)}
+              </p>
+            )}
           </div>
           {msgNotification && msgNotification.length > 0 && (
             <p className="text-[9px] text-whie bg-red-700 px-2 py-1  rounded-full">
@@ -91,7 +114,6 @@ const Mychat = ({ data }) => {
     );
   } else {
     const user = data.users.find((user) => user._id !== userData?.data?._id);
-
     chats = (
       <div
         className={`grid grid-cols-12 py-2 px-2 cursor-pointer hover:bg-[#202C33] items-center rounded-2xl ${
@@ -107,12 +129,19 @@ const Mychat = ({ data }) => {
         <div className="col-span-10 flex justify-between items-center gap-2 border-b border-slate-800">
           <div className="text-start">
             <h5>{user.name}</h5>
-            <p className="text-sm text-slate-500">
-              {recentMsg &&
-                (recentMsg.length > 25
-                  ? recentMsg.slice(0, 25) + "..."
-                  : recentMsg)}
-            </p>
+            {data?.latestMessage?.sender?.name && (
+              <p className="text-sm text-slate-500">
+                <span className="text-white text-[10px] capitalize">
+                  {userData?.data?._id === data?.latestMessage?.sender._id
+                    ? "You : "
+                    : data?.latestMessage?.sender?.name?.slice(0, 3) + " : "}
+                </span>
+                {recentMsg &&
+                  (recentMsg.length > 22
+                    ? recentMsg.slice(0, 22) + "..."
+                    : recentMsg)}
+              </p>
+            )}
           </div>
 
           {msgNotification && msgNotification.length > 0 && (

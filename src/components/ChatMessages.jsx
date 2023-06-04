@@ -5,8 +5,10 @@ import { FaTelegram } from "react-icons/fa";
 import { useSendMessageMutation } from "../features/messages/messageApi";
 import { addNewMsg } from "../features/messages/messageSlice";
 import socket from "../socket";
-import { addSingleNotification } from "../features/chat/chatSlice";
-// import { useDeleteNotificationMutation } from "../features/notification/notificationApi";
+import {
+  addSingleNotification,
+  updateLatestMsg,
+} from "../features/chat/chatSlice";
 
 const ChatMessages = () => {
   const { isLoading, error, data, chatId } = useSelector(
@@ -20,7 +22,6 @@ const ChatMessages = () => {
   const [isSocketConnected, setisSocketConnected] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const msgIdRef = useRef();
-  // const [deleteNotification] = useDeleteNotificationMutation();
   const sendMessageHandle = () => {
     setMsgText("");
     let data = {
@@ -31,6 +32,7 @@ const ChatMessages = () => {
       .unwrap()
       .then((res) => {
         dispatch(addNewMsg(res.data));
+        dispatch(updateLatestMsg(res.data));
         socket.emit("new message", res.data);
       })
       .catch((err) => console.log(err));
@@ -63,6 +65,7 @@ const ChatMessages = () => {
 
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
+      console.log(newMessageRecieved);
       let notificationData;
       let msgData = {};
       for (const key in newMessageRecieved) {
@@ -72,11 +75,15 @@ const ChatMessages = () => {
           msgData[key] = newMessageRecieved[key];
         }
       }
+
       if (msgData._id !== msgIdRef.current) {
         dispatch(addNewMsg(msgData));
         dispatch(addSingleNotification(notificationData));
         msgIdRef.current = msgData._id;
       }
+
+      dispatch(updateLatestMsg(msgData));
+      msgIdRef.current = msgData._id;
     });
 
     return () => {
@@ -99,37 +106,27 @@ const ChatMessages = () => {
     messages = (
       <div>
         {data.map((msg) => {
-          if (msg?.sender?._id === user?.data?._id && msg.chat._id === chatId) {
-            return (
-              <div className="chat chat-end" key={msg._id}>
-                {/* <div className="chat-image avatar">
-                  <div className="w-6 rounded-full">
-                    <img src={require("../img/avatar.png")} alt="" />
-                  </div>
-                </div> */}
-
-                <div className="chat-bubble text-[13px]">{msg.content}</div>
-                {/* <div className="chat-footer opacity-50 text-[11px]">
-                  Seen at 12:46
-                </div> */}
-              </div>
-            );
-          }
-          if (msg?.sender?._id !== user?.data?._id && msg.chat._id === chatId) {
-            return (
-              <div className="chat chat-start" key={msg._id}>
-                <div className="chat-image avatar">
-                  <div className="w-6 rounded-full">
-                    <img src={msg?.sender?.picture} alt="" />
-                  </div>
+          if (msg.chat === chatId) {
+            if (msg?.sender?._id === user?.data?._id) {
+              return (
+                <div className="chat chat-end" key={msg._id}>
+                  <div className="chat-bubble text-[13px]">{msg.content}</div>
                 </div>
-                <div className="chat-bubble text-[13px]">{msg?.content}</div>
-                {/* <div className="chat-footer opacity-50 text-[11px]">
-                  Delivered
-                </div> */}
-              </div>
-            );
+              );
+            } else {
+              return (
+                <div className="chat chat-start" key={msg._id}>
+                  <div className="chat-image avatar">
+                    <div className="w-6 rounded-full">
+                      <img src={msg?.sender?.picture} alt="" />
+                    </div>
+                  </div>
+                  <div className="chat-bubble text-[13px]">{msg?.content}</div>
+                </div>
+              );
+            }
           }
+          return "";
         })}
       </div>
     );
