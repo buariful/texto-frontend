@@ -11,9 +11,8 @@ import socket from "../socket";
 import { useDeleteNotificationMutation } from "../features/notification/notificationApi";
 import { updateNotifications } from "../features/chat/chatSlice";
 
-const Mychat = ({ data }) => {
+const Mychat = ({ data, setDrawerOpen }) => {
   const userData = useSelector((state) => state.user?.user);
-  console.log(userData?.data?._id);
 
   const chatId = useSelector((state) => state.message?.chatId);
   const notification = useSelector((state) => state.chat.notification);
@@ -23,6 +22,7 @@ const Mychat = ({ data }) => {
   const dispatch = useDispatch();
 
   const handleShowMessages = async () => {
+    setDrawerOpen(true);
     await deleteNotification({ token: userData?.token, chatId: data._id });
     if (notification && notification.length > 0) {
       await dispatch(
@@ -43,8 +43,8 @@ const Mychat = ({ data }) => {
       // })
       .then((res) => {
         dispatch(setMsgLoading(false));
-        dispatch(setChatId(data._id));
         dispatch(setMsgError(null));
+        dispatch(setChatId(data._id));
         dispatch(setMsgData(res.data));
         //  dispatch(setMsgData({ data: res?.data, chatId: data._id }))
       })

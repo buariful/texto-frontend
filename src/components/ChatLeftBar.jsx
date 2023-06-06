@@ -10,7 +10,7 @@ import { setChats, setNotification } from "../features/chat/chatSlice";
 import GroupModal from "./GroupModal";
 import { useGetAllNotificationMutation } from "../features/notification/notificationApi";
 
-const ChatLeftBar = () => {
+const ChatLeftBar = ({ setDrawerOpen }) => {
   const [getUsers, { data, isLoading }] = useGetUsersMutation();
   const [getAllChats, { isLoading: chatLoading }] = useGetAllChatsMutation();
   const [getAllNotification] = useGetAllNotificationMutation();
@@ -64,7 +64,7 @@ const ChatLeftBar = () => {
   }
   if (userChats?.data?.length > 0) {
     chatContent = userChats.data?.map((chat) => (
-      <Mychat key={chat._id} data={chat} />
+      <Mychat key={chat._id} data={chat} setDrawerOpen={setDrawerOpen} />
     ));
   }
   if (userChats?.data?.length === 0) {
@@ -76,26 +76,15 @@ const ChatLeftBar = () => {
   }
   return (
     <>
-      <div className="h-screen w-full bg-[#0000002e] pt-3 pb-4 ">
-        <div className="h-[16%]">
+      <div className="h-screen w-full bg-[#0000002e] ">
+        <div className="h-[16%] pt-3">
           <div className="bg-[#202C33] py-2 px-8 flex justify-around items-center">
             <img
               src={require("../img/avatar.png")}
               alt=""
               className="w-[40px]"
             />
-            {/* <div className="dropdown">
-              <label tabIndex={0} className="btn m-1">
-                Click
-              </label>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-              >
-                <li>Item 1</li>
-                <li>Item 2</li>
-              </ul>
-            </div> */}
+
             <div className="dropdown">
               <button className="text-white text-xl" tabIndex={0}>
                 <CiMenuKebab />
@@ -104,7 +93,6 @@ const ChatLeftBar = () => {
                 tabIndex={0}
                 className="dropdown-content w-52 bg-gray-700 shadow shadow-gray-600 rounded p-3 text-sm "
               >
-                {/* <li htmlFor="my-modal">Item 1</li> */}
                 <li>
                   <label
                     htmlFor="my-modal"
@@ -129,7 +117,7 @@ const ChatLeftBar = () => {
           </div>
         </div>
 
-        <div className="h-[80%] overflow-y-auto mt-4">
+        <div className="h-[80%] overflow-y-auto mt-4 pb-4">
           {searchText ? (
             <div className="bg-[#202C33] py-4 h-full mx-4 rounded border border-[#4c4c4c] overflow-y-auto">
               <p className="text-center mb-3">Your search result</p>
@@ -141,12 +129,6 @@ const ChatLeftBar = () => {
           )}
         </div>
       </div>
-
-      {/* <label htmlFor="my-modal" className="btn">
-        open modal
-      </label> */}
-
-      {/* Put this part before </body> tag */}
     </>
   );
 };
