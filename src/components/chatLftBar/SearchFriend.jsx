@@ -1,7 +1,7 @@
 import React from "react";
-import { useAccesOneChatMutation } from "../features/chat/chatApi";
+import { useAccesOneChatMutation } from "../../features/chat/chatApi";
+import { addSingleChat } from "../../features/chat/chatSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { addSingleChat } from "../features/chat/chatSlice";
 
 const SearchFriend = ({ data, setState }) => {
   const { _id, picture, name } = data;

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useGetAllMessagesMutation } from "../features/messages/messageApi";
+import { useGetAllMessagesMutation } from "../../features/messages/messageApi";
 import {
   setChatId,
   setMsgData,
   setMsgError,
   setMsgLoading,
-} from "../features/messages/messageSlice";
-import socket from "../socket";
-import { useDeleteNotificationMutation } from "../features/notification/notificationApi";
-import { updateNotifications } from "../features/chat/chatSlice";
+} from "../../features/messages/messageSlice";
+import socket from "../../socket";
+import { useDeleteNotificationMutation } from "../../features/notification/notificationApi";
+import { updateNotifications } from "../../features/chat/chatSlice";
 
 const Mychat = ({ data, setDrawerOpen }) => {
   const userData = useSelector((state) => state.user?.user);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ChatLeftBar from "../components/ChatLeftBar";
-import ChatMessages from "../components/ChatMessages.jsx";
+import ChatRight from "../components/ChatRight";
 
 const Chat = () => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -14,7 +14,7 @@ const Chat = () => {
           </div>
 
           <div className=" col-span-7 lg:col-span-8 xl:col-span-9">
-            <ChatMessages
+            <ChatRight
               setDrawerOpen={setDrawerOpen}
               isDrawerOpen={isDrawerOpen}
             />

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { useGetUsersMutation } from "../features/auth/userApi";
+import { useGetUsersMutation } from "../../features/auth/userApi";
 import { useDispatch, useSelector } from "react-redux";
-import Loader from "../components/Loader";
-import { useCreateGroupMutation } from "../features/chat/chatApi";
-import { addSingleChat } from "../features/chat/chatSlice";
+import Loader from "../shared/Loader";
+import { useCreateGroupMutation } from "../../features/chat/chatApi";
+import { addSingleChat } from "../../features/chat/chatSlice";
 
 const GroupModal = () => {
   const [getUsers, { data, isLoading, error }] = useGetUsersMutation();

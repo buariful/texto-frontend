@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { CiMenuKebab } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { useGetUsersMutation } from "../features/auth/userApi";
-import Loader from "./Loader";
+import Loader from "./shared/Loader";
 import { useGetAllChatsMutation } from "../features/chat/chatApi";
-import Mychat from "./Mychat";
-import SearchFriend from "./SearchFriend";
+import Mychat from "./chatLftBar/Mychat";
+import SearchFriend from "./chatLftBar/SearchFriend";
 import { setChats, setNotification } from "../features/chat/chatSlice";
-import GroupModal from "./GroupModal";
+import GroupModal from "./shared/GroupModal";
 import { useGetAllNotificationMutation } from "../features/notification/notificationApi";
 
 const ChatLeftBar = ({ setDrawerOpen }) => {
