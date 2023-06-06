@@ -1,28 +1,24 @@
-import { useDispatch } from "react-redux";
-import { setUser } from "../features/auth/userSlice";
-import { useGetUserByTokenMutation } from "../features/auth/userApi";
-import { Navigate, useLocation } from "react-router-dom";
-import Loader from "../components/Loader";
+import React from "react";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
+import Loader from "../components/shared/Loader";
 
-export default async function PrivateRoute({ children }) {
-  const location = useLocation();
-  const dispatch = useDispatch();
-  const [getUserByToken, { data, isLoading }] = useGetUserByTokenMutation();
-  const auth = JSON.parse(localStorage.getItem("auth"));
-  if (isLoading) {
+const PrivateRoute = () => {
+  const userData = useSelector((state) => state.user);
+
+  if (userData?.isAuthLoading) {
     return (
-      <div className="h-screen w-full flex justify-center items-center">
+      <div className="w-screen h-screen">
         <Loader />
       </div>
     );
   }
-  if (auth) {
-    await getUserByToken(auth);
-    dispatch(setUser(data));
-    return children;
-  }
 
-  if (!auth) {
-    return <Navigate to="/" state={{ from: location }} replace></Navigate>;
+  if (userData?.user) {
+    return <Outlet />;
+  } else {
+    return <Navigate to="/" />;
   }
-}
+};
+
+export default PrivateRoute;

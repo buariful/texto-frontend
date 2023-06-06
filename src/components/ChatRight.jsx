@@ -104,7 +104,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
             </label>
           </div>
 
-          <div classname="px-5">
+          <div className="px-5">
             <Messages />
             {istyping && roomId === chatId && (
               <div className="chat chat-start">

@@ -1,29 +1,30 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUser } from "../features/auth/userSlice";
+import { setAuthLoading, setUser } from "../features/auth/userSlice";
 import { useGetUserByTokenMutation } from "../features/auth/userApi";
 
 export default function useAuthCheck() {
-  const [isAuthenticUser, setIsAuthenticUser] = useState(false);
+  const [isAuthChecked, setAuthCheck] = useState(false);
   const dispatch = useDispatch();
   const [getUserByToken] = useGetUserByTokenMutation();
-  const auth = localStorage.getItem("auth");
+  const token = localStorage.getItem("auth");
 
   useEffect(() => {
-    if (auth) {
-      const token = JSON.parse(auth);
-      getUserByToken(token)
+    if (token) {
+      const parseToken = JSON.parse(token);
+      dispatch(setAuthLoading(true));
+      getUserByToken(parseToken)
         .unwrap()
         .then((res) => {
           dispatch(setUser(res));
-          setIsAuthenticUser(true);
+          dispatch(setAuthLoading(false));
         })
         .catch((err) => {
-          console.log(err);
-          setIsAuthenticUser(false);
+          dispatch(setAuthLoading(false));
         });
     }
-  }, [dispatch, getUserByToken, auth]);
-  return isAuthenticUser;
+    setAuthCheck(true);
+  }, [isAuthChecked, dispatch, token, getUserByToken]);
+  return isAuthChecked;
 }

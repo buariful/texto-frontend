@@ -44,7 +44,7 @@ const ChatLeftBar = ({ setDrawerOpen }) => {
         dispatch(setNotification(res.data?.data));
         // console.log(res?.data?.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   }, [getAllChats, getAllNotification, token, dispatch]);
 
   let seachContent;

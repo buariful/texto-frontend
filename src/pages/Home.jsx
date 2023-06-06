@@ -1,16 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { useLoginMutation, useSignUpMutation } from "../features/auth/userApi";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { setUser } from "../features/auth/userSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import Loader from "../components/shared/Loader";
 
 const Home = () => {
   const navigate = useNavigate();
-  // const [getUserByToken] = useGetUserByTokenMutation();
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.user.user);
-
-  // const token = JSON.parse(localStorage.getItem("auth"));
+  const userData = useSelector((state) => state.user);
 
   // =============signUp and login form states =========
   const [actionLoading, setActionLoading] = useState({
@@ -51,26 +50,6 @@ const Home = () => {
       switcherTab.current.classList.add("translate-x-full");
     }
   };
-
-  // useEffect(() => {
-  //   if (token) {
-  //     getUserByToken(token)
-  //       .unwrap()
-  //       .then((res) => {
-  //         dispatch(setUser(res));
-  //       })
-  //       .then((res) => navigate("/chat"))
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   }
-  // }, [dispatch, getUserByToken, token]);
-
-  useEffect(() => {
-    if (userData) {
-      navigate("/chat");
-    }
-  }, [navigate, userData]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -115,6 +94,16 @@ const Home = () => {
       });
   };
 
+  if (userData?.user) {
+    return <Navigate to="/chat" />;
+  }
+  if (userData?.isAuthLoading) {
+    return (
+      <div className="w-screen h-screen">
+        <Loader />
+      </div>
+    );
+  }
   return (
     <div className="h-screen w-full flex items-center justify-center">
       <div className="max-w-[500px] w-[500px] mx-auto bg-gray-800 p-5 rounded overflow-hidden">
