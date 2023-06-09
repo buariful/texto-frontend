@@ -7,9 +7,9 @@ export const userApi = apiSlice.injectEndpoints({
         url: "/v1/register",
         method: "POST",
         body: userData,
-        headers: {
-          "Content-Type": "application/json",
-        },
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
       }),
     }),
     login: builder.mutation({
@@ -43,6 +43,28 @@ export const userApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    updatePassword: builder.mutation({
+      query: ({ token, passwords }) => ({
+        url: `/v1/update-password`,
+        method: "PUT",
+        body: passwords,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }),
+    }),
+    updateProfile: builder.mutation({
+      query: ({ token, data }) => ({
+        url: `/v1/update-profile`,
+        method: "PUT",
+        body: data,
+        headers: {
+          // "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }),
+    }),
   }),
 });
 
@@ -51,6 +73,8 @@ export const {
   useLoginMutation,
   useGetUsersMutation,
   useGetUserByTokenMutation,
+  useUpdatePasswordMutation,
+  useUpdateProfileMutation,
 } = userApi;
 
 export const getUsersMutation = userApi.endpoints.getUsers.useMutation;

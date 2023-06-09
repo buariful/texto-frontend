@@ -21,6 +21,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
   const [isSocketConnected, setisSocketConnected] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const msgIdRef = useRef();
+  const selectedChatID = useRef();
 
   const sendMessageHandle = () => {
     setMsgText("");
@@ -50,7 +51,6 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
       }, 3000);
     }
   };
-
   useEffect(() => {
     socket.emit("setup", user.data);
     socket.on("connected", () => setisSocketConnected(true));
@@ -77,18 +77,22 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
 
       if (msgData._id !== msgIdRef.current) {
         dispatch(addNewMsg(msgData));
-        dispatch(addSingleNotification(notificationData));
         msgIdRef.current = msgData._id;
+        dispatch(addSingleNotification(notificationData));
       }
-
       dispatch(updateLatestMsg(msgData));
       msgIdRef.current = msgData._id;
     });
-
     return () => {
       socket.off("message received");
     };
   });
+
+  useEffect(() => {
+    if (chatId) {
+      selectedChatID.current = chatId;
+    }
+  }, [chatId]);
 
   return (
     <>

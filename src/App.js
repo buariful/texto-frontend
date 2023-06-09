@@ -5,6 +5,7 @@ import Chat from "./pages/Chat";
 import PrivateRoute from "./utils/PrivateRoute";
 import useAuthCheck from "./utils/useAuthCheck";
 import Loader from "./components/shared/Loader";
+import Settings from "./pages/Settings";
 
 function App() {
   const isAuthChecked = useAuthCheck();
@@ -21,6 +22,7 @@ function App() {
 
             <Route exact path="/" element={<PrivateRoute />}>
               <Route path="/chat" element={<Chat />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Routes>
         </Router>

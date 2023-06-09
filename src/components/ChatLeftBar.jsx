@@ -9,6 +9,8 @@ import SearchFriend from "./chatLftBar/SearchFriend";
 import { setChats, setNotification } from "../features/chat/chatSlice";
 import GroupModal from "./shared/GroupModal";
 import { useGetAllNotificationMutation } from "../features/notification/notificationApi";
+import { useNavigate } from "react-router-dom";
+import { clearUser } from "../features/auth/userSlice";
 
 const ChatLeftBar = ({ setDrawerOpen }) => {
   const [getUsers, { data, isLoading }] = useGetUsersMutation();
@@ -20,6 +22,7 @@ const ChatLeftBar = ({ setDrawerOpen }) => {
   const userData = useSelector((state) => state.user);
   const token = userData?.user?.token;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     const text = e.target.value;
@@ -33,6 +36,13 @@ const ChatLeftBar = ({ setDrawerOpen }) => {
         setError(err.data.message);
       });
   };
+
+  const handleLogOut = () => {
+    dispatch(clearUser());
+
+    navigate("/");
+  };
+
   useEffect(() => {
     getAllChats(token)
       .then((res) => {
@@ -80,9 +90,9 @@ const ChatLeftBar = ({ setDrawerOpen }) => {
         <div className="h-[16%] pt-3">
           <div className="bg-[#202C33] py-2 px-8 flex justify-around items-center">
             <img
-              src={require("../img/avatar.png")}
+              src={userData?.user?.data?.picture?.url}
               alt=""
-              className="w-[40px]"
+              className="max-w-[40px] max-h-[40px] rounded-full"
             />
 
             <div className="dropdown">
@@ -101,7 +111,22 @@ const ChatLeftBar = ({ setDrawerOpen }) => {
                     Create group
                   </label>
                 </li>
-                <li>Item 2</li>
+                <li>
+                  <button
+                    className="block w-full text-center hover:bg-slate-800 py-2 cursor-pointer"
+                    onClick={handleLogOut}
+                  >
+                    Log out
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="block w-full text-center hover:bg-slate-800 py-2 cursor-pointer"
+                    onClick={() => navigate("/settings")}
+                  >
+                    Settings
+                  </button>
+                </li>
               </ul>
             </div>
             <GroupModal />

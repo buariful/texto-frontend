@@ -8,11 +8,6 @@ const RegisterForm = ({ registerTab }) => {
   const [signError, setSignError] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [signUp] = useSignUpMutation();
-  const [signUpData, setSignUpData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,9 +16,16 @@ const RegisterForm = ({ registerTab }) => {
     setSignError("");
     setActionLoading(true);
 
-    signUp(signUpData)
+    const formData = new FormData();
+    formData.append("image", e.target.image.files[0]); // Updated image file
+    formData.append("name", e.target.name.value); // Additional field: name
+    formData.append("password", e.target.password.value);
+    formData.append("email", e.target.email.value);
+
+    signUp(formData)
       .unwrap()
       .then((res) => {
+        console.log(res.data);
         localStorage.setItem("auth", JSON.stringify(res?.token));
         dispatch(setUser(res));
         setActionLoading(false);
@@ -31,6 +33,7 @@ const RegisterForm = ({ registerTab }) => {
       })
       .catch((err) => {
         setSignError(err?.data?.message);
+        console.log(err);
         setActionLoading(false);
       });
   };
@@ -48,10 +51,6 @@ const RegisterForm = ({ registerTab }) => {
           type="text"
           name="name"
           placeholder="name"
-          onChange={(e) =>
-            setSignUpData({ ...signUpData, name: e.target.value })
-          }
-          value={signUpData.name}
           className="input input-bordered input-secondary w-full max-w-xs mb-2 mt-2 "
         />
 
@@ -60,10 +59,6 @@ const RegisterForm = ({ registerTab }) => {
           type="email"
           name="email"
           placeholder="email"
-          onChange={(e) =>
-            setSignUpData({ ...signUpData, email: e.target.value })
-          }
-          value={signUpData.email}
           className="input input-bordered input-secondary w-full max-w-xs mb-2"
         />
 
@@ -72,19 +67,17 @@ const RegisterForm = ({ registerTab }) => {
           type="password"
           name="password"
           placeholder="password"
-          onChange={(e) =>
-            setSignUpData({ ...signUpData, password: e.target.value })
-          }
-          value={signUpData.password}
           className="input input-bordered input-secondary w-full max-w-xs mb-2 "
         />
-
+        <input
+          type="file"
+          className="file-input file-input-bordered w-full max-w-xs mb-2"
+          name="image"
+        />
         <button
           type="submit"
           className={`btn w-full max-w-xs ${
-            actionLoading.signUpLoading
-              ? "bg-[#444952b0] text-[#ffffff75] loading"
-              : ""
+            actionLoading ? "bg-[#444952b0] text-[#ffffff75] loading" : ""
           }`}
         >
           Submit

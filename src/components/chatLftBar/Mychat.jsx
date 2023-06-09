@@ -122,7 +122,7 @@ const Mychat = ({ data, setDrawerOpen }) => {
         onClick={handleShowMessages}
       >
         <img
-          src={user.picture}
+          src={user?.picture?.url}
           alt=""
           className="w-[35px] col-span-2 rounded-full"
         />
