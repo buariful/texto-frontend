@@ -27,7 +27,6 @@ const RegisterForm = ({ registerTab }) => {
     signUp(formData)
       .unwrap()
       .then((res) => {
-        console.log(res.data);
         setLocalStorage(res.token);
         dispatch(setUser(res));
         setActionLoading(false);
@@ -36,7 +35,6 @@ const RegisterForm = ({ registerTab }) => {
       })
       .catch((err) => {
         setSignError(err?.data?.message);
-        console.log(err);
         setActionLoading(false);
       });
   };

@@ -40,7 +40,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
         await dispatch(updateLatestMsg(res.data));
         socket.emit("new message", res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
   };
 
   let typingTimeout = null;

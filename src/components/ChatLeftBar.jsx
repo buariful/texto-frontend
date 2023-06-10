@@ -48,11 +48,10 @@ const ChatLeftBar = ({ setDrawerOpen }) => {
       .then((res) => {
         dispatch(setChats(res.data?.data));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {});
     getAllNotification(token)
       .then((res) => {
         dispatch(setNotification(res.data?.data));
-        // console.log(res?.data?.data);
       })
       .catch((err) => {});
   }, [getAllChats, getAllNotification, token, dispatch]);
