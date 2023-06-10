@@ -7,6 +7,7 @@ import {
 } from "../../features/chat/chatApi";
 import { removeUser, updateChats } from "../../features/chat/chatSlice";
 import { setChatId } from "../../features/messages/messageSlice";
+import Toast from "../../utils/Toast";
 
 const ChatInfoModal = () => {
   const chatId = useSelector((state) => state.message.chatId);
@@ -28,14 +29,16 @@ const ChatInfoModal = () => {
     setLoading({ ...loading, leaveLoading: true });
     removeFromGroup({ token, data: { chatId, userId: id } })
       .unwrap()
-      .then(() => {
+      .then((res) => {
         setError("");
         dispatch(updateChats(chatId));
         dispatch(setChatId(null));
+        Toast(res.message);
         setLoading({ ...loading, leaveLoading: false });
       })
       .catch((err) => {
         setError(err.message);
+        Toast(err?.data?.message);
         setLoading({ ...loading, leaveLoading: false });
       });
   }
@@ -44,13 +47,15 @@ const ChatInfoModal = () => {
     setLoading({ deleteLoading: true, leaveLoading: true });
     removeFromGroup({ token, data: { chatId, userId: id } })
       .unwrap()
-      .then(() => {
+      .then((res) => {
         setError("");
         dispatch(removeUser({ userId: id, chatId }));
+        Toast(res.message);
         setLoading({ deleteLoading: false, leaveLoading: false });
       })
       .catch((err) => {
         setError(err.message);
+        Toast(err?.data?.message);
         setLoading({ deleteLoading: false, leaveLoading: false });
       });
   }
@@ -59,14 +64,16 @@ const ChatInfoModal = () => {
     setLoading({ ...loading, deleteLoading: true });
     deleteGroup({ token, chatId })
       .unwrap()
-      .then(() => {
+      .then((res) => {
         setError("");
         dispatch(updateChats(chatId));
         dispatch(setChatId(null));
+        Toast(res.message);
         setLoading({ ...loading, deleteLoading: false });
       })
       .catch((err) => {
         setError(err.message);
+        Toast(err?.data?.message);
         setLoading({ ...loading, deleteLoading: false });
       });
   }

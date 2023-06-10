@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../features/auth/userSlice";
 import { useNavigate } from "react-router-dom";
 import setLocalStorage from "../../utils/setLocalstorage";
+import Toast from "../../utils/Toast";
 
 const RegisterForm = ({ registerTab }) => {
   const [signError, setSignError] = useState("");
@@ -30,6 +31,7 @@ const RegisterForm = ({ registerTab }) => {
         setLocalStorage(res.token);
         dispatch(setUser(res));
         setActionLoading(false);
+        Toast(res?.message);
         navigate("/chat");
       })
       .catch((err) => {

@@ -4,6 +4,7 @@ import { useUpdatePasswordMutation } from "../../features/auth/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../features/auth/userSlice";
 import setLocalStorage from "../../utils/setLocalstorage";
+import Toast from "../../utils/Toast";
 
 const PasswordUpdate = () => {
   const [error, setError] = useState("");
@@ -36,6 +37,7 @@ const PasswordUpdate = () => {
         setActionLoading(false);
         dispatch(setUser(res));
         setLocalStorage(res.token);
+        Toast(res?.message);
         setPassword({
           oldPass: "",
           newPass: "",
@@ -45,6 +47,7 @@ const PasswordUpdate = () => {
       })
       .catch((err) => {
         setError(err.data.message);
+        Toast(err?.data?.message);
         setActionLoading(false);
       });
   };

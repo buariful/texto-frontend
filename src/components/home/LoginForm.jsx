@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../features/auth/userSlice";
 import { useNavigate } from "react-router-dom";
 import setLocalStorage from "../../utils/setLocalstorage";
+import Toast from "../../utils/Toast";
 
 const LoginForm = ({ loginTab }) => {
   const [login] = useLoginMutation();
@@ -31,6 +32,7 @@ const LoginForm = ({ loginTab }) => {
       .then((res) => {
         dispatch(setUser(res));
         setLocalStorage(res.token);
+        Toast(res?.message);
         setActionLoading({ ...actionLoading, loginLoading: false });
         navigate("/chat");
       })

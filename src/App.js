@@ -6,6 +6,8 @@ import PrivateRoute from "./utils/PrivateRoute";
 import useAuthCheck from "./utils/useAuthCheck";
 import Loader from "./components/shared/Loader";
 import Settings from "./pages/Settings";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const isAuthChecked = useAuthCheck();
@@ -27,6 +29,8 @@ function App() {
           </Routes>
         </Router>
       )}
+
+      <ToastContainer />
     </div>
   );
 }

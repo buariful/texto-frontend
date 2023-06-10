@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useUpdateProfileMutation } from "../../features/auth/userApi";
 import { setUser } from "../../features/auth/userSlice";
 import setLocalStorage from "../../utils/setLocalstorage";
+import Toast from "../../utils/Toast";
 
 const ProfileUpdate = () => {
   const [actionLoading, setActionLoading] = useState(false);
@@ -31,12 +32,14 @@ const ProfileUpdate = () => {
         dispatch(setUser(res));
         setLocalStorage(res.token);
         setActionLoading(false);
+        Toast(res?.message);
         setError("");
         setName("");
         setEmail("");
       })
       .catch((err) => {
         setError(err.data.message);
+        Toast(err?.data?.message);
         setActionLoading(false);
       });
   }
