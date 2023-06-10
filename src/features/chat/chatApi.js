@@ -34,6 +34,40 @@ export const chatApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    deleteGroup: builder.mutation({
+      query: ({ token, chatId }) => ({
+        url: "/v1/delete-group",
+        method: "DELETE",
+        body: { chatId: chatId },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }),
+    }),
+    addToGroup: builder.mutation({
+      query: ({ token, data }) => ({
+        url: "/v1/addTo-group",
+        method: "PUT",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }),
+    }),
+
+    removeFromGroup: builder.mutation({
+      query: ({ token, data }) => ({
+        url: "/v1/removefrom-group",
+        method: "PUT",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }),
+    }),
   }),
 });
 
@@ -41,4 +75,7 @@ export const {
   useGetAllChatsMutation,
   useAccesOneChatMutation,
   useCreateGroupMutation,
+  useDeleteGroupMutation,
+  useAddToGroupMutation,
+  useRemoveFromGroupMutation,
 } = chatApi;

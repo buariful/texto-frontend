@@ -30,6 +30,23 @@ const chatSlice = createSlice({
       );
       state.notification = filteredNotifications;
     },
+    updateChats: (state, action) => {
+      const newChats = state.data.filter((d) => d._id !== action.payload);
+      state.data = newChats;
+    },
+    removeUser: (state, action) => {
+      const { userId, chatId } = action.payload;
+
+      const chat = state.data.find((item) => item._id === chatId);
+      const otherChats = state.data.filter((item) => item._id !== chatId);
+      if (chat) {
+        const userIndex = chat.users.findIndex((user) => user._id === userId);
+        if (userIndex !== -1) {
+          chat.users.splice(userIndex, 1);
+        }
+      }
+      state.data = [...otherChats, chat];
+    },
   },
 });
 
@@ -41,4 +58,6 @@ export const {
   updateLatestMsg,
   addSingleNotification,
   updateNotifications,
+  updateChats,
+  removeUser,
 } = chatSlice.actions;

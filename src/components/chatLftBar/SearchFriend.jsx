@@ -22,11 +22,15 @@ const SearchFriend = ({ data, setState }) => {
       key={_id}
       onClick={handleAddFriend}
     >
-      <img
+      <div
+        className={`bg-cover bg-no-repeat bg-center col-span-2 rounded-full w-[35px] h-[35px]`}
+        style={{ backgroundImage: `url(${picture?.url})` }}
+      ></div>
+      {/* <img
         src={picture?.url}
         alt=""
         className="max-w-[35px] max-h-[35px] rounded-full"
-      />
+      /> */}
       <p className="capitalize text-sm">{name}</p>
     </div>
   );

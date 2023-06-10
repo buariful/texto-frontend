@@ -121,11 +121,16 @@ const Mychat = ({ data, setDrawerOpen }) => {
         } `}
         onClick={handleShowMessages}
       >
-        <img
+        <div
+          className={`bg-cover bg-no-repeat bg-center col-span-2 rounded-full w-[35px] h-[35px]`}
+          style={{ backgroundImage: `url(${user?.picture?.url})` }}
+        ></div>
+
+        {/* <img
           src={user?.picture?.url}
           alt=""
           className="w-[35px] col-span-2 rounded-full"
-        />
+        /> */}
         <div className="col-span-10 flex justify-between items-center gap-2 border-b border-slate-800">
           <div className="text-start">
             <h5>{user.name}</h5>

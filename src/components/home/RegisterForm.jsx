@@ -3,6 +3,7 @@ import { useSignUpMutation } from "../../features/auth/userApi";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../features/auth/userSlice";
 import { useNavigate } from "react-router-dom";
+import setLocalStorage from "../../utils/setLocalstorage";
 
 const RegisterForm = ({ registerTab }) => {
   const [signError, setSignError] = useState("");
@@ -26,7 +27,7 @@ const RegisterForm = ({ registerTab }) => {
       .unwrap()
       .then((res) => {
         console.log(res.data);
-        localStorage.setItem("auth", JSON.stringify(res?.token));
+        setLocalStorage(res.token);
         dispatch(setUser(res));
         setActionLoading(false);
         navigate("/chat");

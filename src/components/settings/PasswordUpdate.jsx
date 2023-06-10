@@ -3,6 +3,7 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { useUpdatePasswordMutation } from "../../features/auth/userApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../features/auth/userSlice";
+import setLocalStorage from "../../utils/setLocalstorage";
 
 const PasswordUpdate = () => {
   const [error, setError] = useState("");
@@ -34,7 +35,7 @@ const PasswordUpdate = () => {
       .then((res) => {
         setActionLoading(false);
         dispatch(setUser(res));
-        localStorage.setItem("auth", JSON.stringify(res.token));
+        setLocalStorage(res.token);
         setPassword({
           oldPass: "",
           newPass: "",

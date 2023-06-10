@@ -14,6 +14,7 @@ import Messages from "./chatRightSide/Messages";
 const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
   const { chatId } = useSelector((state) => state.message);
   const user = useSelector((state) => state.user?.user);
+  const allChats = useSelector((state) => state.chat?.data);
   const [sendMessage] = useSendMessageMutation();
   const [msgText, setMsgText] = useState("");
   const [roomId, setRoomId] = useState("");
@@ -22,6 +23,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
   const [istyping, setIsTyping] = useState(false);
   const msgIdRef = useRef();
   const selectedChatID = useRef();
+  const selectedChatName = useRef();
 
   const sendMessageHandle = () => {
     setMsgText("");
@@ -51,6 +53,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
       }, 3000);
     }
   };
+
   useEffect(() => {
     socket.emit("setup", user.data);
     socket.on("connected", () => setisSocketConnected(true));
@@ -91,21 +94,34 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
   useEffect(() => {
     if (chatId) {
       selectedChatID.current = chatId;
+
+      const selectedChat = allChats.find((chat) => chat._id === chatId);
+      if (selectedChat.isGroupChat) {
+        selectedChatName.current = selectedChat.chatName;
+      } else {
+        const friend = selectedChat.users.find(
+          (frnd) => frnd._id !== user?.data?._id
+        );
+        selectedChatName.current = friend.name;
+      }
     }
-  }, [chatId]);
+  }, [chatId, allChats, user?.data?._id]);
+  // }, [chatId, allChats, user?.data]);
 
   return (
     <>
       {/* --------------- large screen ------------- */}
-      <div className="hidden sm:block relative w-full h-screen overflow-x-hidden">
+      <div className="hidden sm:block w-full h-screen overflow-x-hidden relative">
         <div className="bg-gray-900 overflow-y-auto h-[90vh] xl:h-[93vh]">
-          <div className="bg-gray-800 py-2 text-sm">
-            <label
-              className="text-center cursor-pointer bg-slate-700 p-2"
-              htmlFor="ChatInfoModal"
-            >
-              Mr. hudai
-            </label>
+          <div className="bg-gray-800 text-sm min-h-[60px] flex items-center justify-center sticky top-0 left-0 z-50">
+            {chatId && (
+              <label
+                className="capitalize text-center cursor-pointer bg-slate-700 p-2 px-4 rounded"
+                htmlFor="ChatInfoModal"
+              >
+                {selectedChatName.current}
+              </label>
+            )}
           </div>
 
           <div className="px-5">
@@ -151,24 +167,32 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
       </div>
 
       {/* ----------- mobile screen ----------- */}
+
       <div
-        className={`block sm:hidden max-w-full h-screen fixed left-0 top-0 inset-0 transform transition-transform duration-300 ease-in-out ${
+        className={`block sm:hidden max-w-full w-full min-h-screen h-screen fixed left-0 top-0 inset-0 transform transition-transform duration-300 ease-in-out overflow-y-auto ${
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="bg-gray-900 overflow-y-auto h-[90vh]">
-          <div className="bg-gray-800 py-2 text-sm px-4 flex justify-around mb-3">
-            <button onClick={() => setDrawerOpen(false)} className="text-xl">
-              <FaArrowCircleLeft />
-            </button>
-            <label
-              className="text-center cursor-pointer bg-slate-700 p-2 rounded"
-              htmlFor="ChatInfoModal"
-            >
-              Mr. hudai
-            </label>
-          </div>
+          <div className="bg-gray-800 text-sm min-h-[50px] flex items-center justify-around sticky top-0 left-0 z-50">
+            {chatId && (
+              <>
+                <button
+                  onClick={() => setDrawerOpen(false)}
+                  className="text-xl"
+                >
+                  <FaArrowCircleLeft />
+                </button>
 
+                <label
+                  className="text-center cursor-pointer bg-slate-700 p-2 px-4 rounded capitalize"
+                  htmlFor="ChatInfoModal"
+                >
+                  {selectedChatName.current}
+                </label>
+              </>
+            )}
+          </div>
           <div className=" px-5">
             <Messages />
             {istyping && roomId === chatId && (
@@ -181,7 +205,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
           </div>
         </div>
 
-        <div className="w-full bg-gray-800 h-[10vh] flex items-center justify-center gap-3">
+        <div className="w-full bg-gray-800 h-[10vh] flex items-center justify-center gap-3 sticky bottom-0">
           <textarea
             placeholder="Write message here"
             className={`font-semibold text-sm bg-slate-900 text-white px-3 py-1 h-10 rounded focus:outline-slate-700 focus:border-0 w-full max-w-[300px] ${
@@ -210,7 +234,6 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
           </button>
         </div>
       </div>
-
       <ChatInfoModal />
     </>
   );

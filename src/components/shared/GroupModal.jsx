@@ -77,7 +77,7 @@ const GroupModal = () => {
         onClick={() => addFriends({ id: d._id, name: d.name })}
       >
         <img
-          src={d.picture}
+          src={d.picture?.url}
           alt=""
           className="w-[35px] col-span-2 rounded-full"
         />

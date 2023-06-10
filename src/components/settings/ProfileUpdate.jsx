@@ -1,41 +1,50 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useUpdateProfileMutation } from "../../features/auth/userApi";
+import { setUser } from "../../features/auth/userSlice";
+import setLocalStorage from "../../utils/setLocalstorage";
 
 const ProfileUpdate = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const userData = useSelector((state) => state.user?.user?.data);
+  const userData = useSelector((state) => state.user?.user);
+  const [updateProfile] = useUpdateProfileMutation();
+  const dispatch = useDispatch();
 
-  const handleUpdate = (e) => {
+  function handleUpdate(e) {
     e.preventDefault();
     setError("");
     setActionLoading(true);
 
     const formData = new FormData();
-    formData.append("image", e.target.image.files[0]);
     formData.append("name", name);
     formData.append("email", email);
-
-    // signUp(formData)
-    //   .unwrap()
-    //   .then((res) => {
-    //     dispatch(setUser(res));
-    //     setActionLoading(false);
-    //     navigate("/chat");
-    //   })
-    //   .catch((err) => {
-    //     setSignError(err?.data?.message);
-    //     console.log(err);
-    //     setActionLoading(false);
-    //   });
-  };
+    formData.append("publicId", userData?.data?.picture?.publicId);
+    if (e.target.image.files[0]) {
+      formData.append("image", e.target.image.files[0]);
+    }
+    updateProfile({ token: userData?.token, data: formData })
+      .unwrap()
+      .then((res) => {
+        dispatch(setUser(res));
+        setLocalStorage(res.token);
+        setActionLoading(false);
+        setError("");
+        setName("");
+        setEmail("");
+      })
+      .catch((err) => {
+        setError(err.data.message);
+        setActionLoading(false);
+      });
+  }
 
   useEffect(() => {
-    setName(userData?.name);
-    setEmail(userData?.email);
-  }, [userData?.name, userData?.email]);
+    setName(userData?.data?.name);
+    setEmail(userData?.data?.email);
+  }, [userData?.data?.name, userData?.data?.email]);
   return (
     <div className="px-2">
       <form onSubmit={handleUpdate} className="text-black mt-5">
@@ -56,7 +65,7 @@ const ProfileUpdate = () => {
             </label>
             <p
               className="bg-red-700 hover:bg-red-800 text-white text-sm rounded py-1 px-3 max-h-6 cursor-pointer flex items-center"
-              onClick={() => setName(userData?.name)}
+              onClick={() => setName(userData?.data?.name)}
             >
               Reset
             </p>
@@ -77,7 +86,7 @@ const ProfileUpdate = () => {
             </label>
             <p
               className="bg-red-700 hover:bg-red-800 text-white text-sm rounded py-1 px-3 max-h-6 cursor-pointer flex items-center"
-              onClick={() => setEmail(userData?.email)}
+              onClick={() => setEmail(userData?.data?.email)}
             >
               Reset
             </p>

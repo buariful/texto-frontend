@@ -37,7 +37,7 @@ const Messages = () => {
                 <div className="chat chat-start" key={msg._id}>
                   <div className="chat-image avatar">
                     <div className="w-6 rounded-full">
-                      <img src={msg?.sender?.picture} alt="" />
+                      <img src={msg?.sender?.picture?.url} alt="" />
                     </div>
                   </div>
                   <div className="chat-bubble text-[13px] text-start break-all">
