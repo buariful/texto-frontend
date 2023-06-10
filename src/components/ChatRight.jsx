@@ -10,6 +10,7 @@ import {
 } from "../features/chat/chatSlice";
 import ChatInfoModal from "./shared/ChatInfoModal";
 import Messages from "./chatRightSide/Messages";
+import { useDeleteNotificationMutation } from "../features/notification/notificationApi";
 
 const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
   const { chatId } = useSelector((state) => state.message);
@@ -24,6 +25,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
   const msgIdRef = useRef();
   const selectedChatID = useRef();
   const selectedChatName = useRef();
+  const [deleteNotification] = useDeleteNotificationMutation();
 
   const sendMessageHandle = () => {
     setMsgText("");
@@ -77,11 +79,19 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
           msgData[key] = newMessageRecieved[key];
         }
       }
-
       if (msgData._id !== msgIdRef.current) {
+        if (
+          selectedChatID?.current.toString() === msgData?.chat?._id.toString()
+        ) {
+          deleteNotification({
+            token: user?.token,
+            chatId: selectedChatID?.current,
+          });
+        } else {
+          dispatch(addSingleNotification(notificationData));
+        }
         dispatch(addNewMsg(msgData));
         msgIdRef.current = msgData._id;
-        dispatch(addSingleNotification(notificationData));
       }
       dispatch(updateLatestMsg(msgData));
       msgIdRef.current = msgData._id;
