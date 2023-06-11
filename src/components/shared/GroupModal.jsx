@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../shared/Loader";
 import { useCreateGroupMutation } from "../../features/chat/chatApi";
 import { addSingleChat } from "../../features/chat/chatSlice";
+import Toast from "../../utils/Toast";
 
 const GroupModal = () => {
   const [getUsers, { data, isLoading, error }] = useGetUsersMutation();
@@ -41,8 +42,14 @@ const GroupModal = () => {
 
     createGroup({ token, data })
       .unwrap()
-      .then((res) => dispatch(addSingleChat(res.data)))
-      .catch((err) => setGroupError(err?.data?.message));
+      .then((res) => {
+        dispatch(addSingleChat(res.data));
+        Toast(res?.message);
+      })
+      .catch((err) => {
+        setGroupError(err?.data?.message);
+        Toast(err?.data?.message);
+      });
 
     setGroupName("");
     setInputText("");
