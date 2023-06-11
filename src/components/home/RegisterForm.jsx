@@ -72,6 +72,7 @@ const RegisterForm = ({ registerTab }) => {
         />
         <input
           type="file"
+          accept="image/*"
           className="file-input file-input-bordered w-full max-w-xs mb-2"
           name="image"
         />
