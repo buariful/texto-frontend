@@ -81,7 +81,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
       }
       if (msgData._id !== msgIdRef.current) {
         if (
-          selectedChatID?.current.toString() === msgData?.chat?._id.toString()
+          selectedChatID?.current?.toString() === msgData?.chat?._id?.toString()
         ) {
           deleteNotification({
             token: user?.token,
@@ -94,6 +94,7 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
         msgIdRef.current = msgData._id;
       }
       dispatch(updateLatestMsg(msgData));
+
       msgIdRef.current = msgData._id;
     });
     return () => {
@@ -116,7 +117,6 @@ const ChatRight = ({ setDrawerOpen, isDrawerOpen }) => {
       }
     }
   }, [chatId, allChats, user?.data?._id]);
-  // }, [chatId, allChats, user?.data]);
 
   return (
     <>

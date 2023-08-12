@@ -2,16 +2,19 @@ import React from "react";
 import { useAccesOneChatMutation } from "../../features/chat/chatApi";
 import { addSingleChat } from "../../features/chat/chatSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { setChatId } from "../../features/messages/messageSlice";
 
 const SearchFriend = ({ data, setState }) => {
   const { _id, picture, name } = data;
   const [accesOneChat] = useAccesOneChatMutation();
   const user = useSelector((state) => state.user?.user);
+  // const chatData = useSelector((state) => state.chat?.data);
   const token = user.token;
   const dispatch = useDispatch();
 
   const handleAddFriend = async (id) => {
     const response = await accesOneChat({ token: token, id: { userId: _id } });
+    dispatch(setChatId(response?.data?._id));
     dispatch(addSingleChat(response?.data));
     setState("");
   };
