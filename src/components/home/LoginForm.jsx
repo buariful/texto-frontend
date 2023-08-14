@@ -82,44 +82,44 @@ const LoginForm = ({ loginTab }) => {
         >
           Submit
         </button>
-      </form>
-      <div className="overflow-x-auto w-11/12 max-w-[500px] mx-auto my-8">
-        <table className="min-w-full border text-center text-sm font-light ">
-          <tbody>
-            <tr
-              className="border-b font-semibold cursor-pointer hover:bg-blue-gray-50 duration-300"
-              onClick={() => {
-                setEmail("abc@gmail.com");
-                setPassword("111111");
-              }}
-            >
-              <td className="whitespace-nowrap border-r px-4 py-2 font-medium ">
-                <span className="font-semibold">User 1</span>
-              </td>
-              <td className="whitespace-nowrap border-r px-4 py-2">
-                abc@gmail.com
-              </td>
-              <td className="whitespace-nowrap px-4 py-2">111111</td>
-            </tr>
+        <div className="overflow-x-auto w-11/12 max-w-[500px] mx-auto my-8 text-white">
+          <table className="min-w-full border text-center text-sm font-light ">
+            <tbody>
+              <tr
+                className="border-b font-semibold cursor-pointer hover:bg-gray-300 hover:text-slate-800 duration-300"
+                onClick={() => {
+                  setEmail("abc@gmail.com");
+                  setPassword("111111");
+                }}
+              >
+                <td className="whitespace-nowrap border-r px-4 py-2 font-medium ">
+                  <span className="font-semibold">User 1</span>
+                </td>
+                <td className="whitespace-nowrap border-r px-4 py-2">
+                  abc@gmail.com
+                </td>
+                <td className="whitespace-nowrap px-4 py-2">111111</td>
+              </tr>
 
-            <tr
-              className="border-b font-semibold cursor-pointer hover:bg-blue-gray-50 duration-300"
-              onClick={() => {
-                setEmail("abc2@gmail.com");
-                setPassword("111111");
-              }}
-            >
-              <td className="whitespace-nowrap border-r px-4 py-2 font-medium ">
-                <span className="font-semibold">User 2</span>
-              </td>
-              <td className="whitespace-nowrap border-r px-4 py-2">
-                abc2@gmail.com
-              </td>
-              <td className="whitespace-nowrap px-4 py-2">111111</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              <tr
+                className="border-b font-semibold cursor-pointer hover:bg-gray-300 hover:text-slate-800 duration-300"
+                onClick={() => {
+                  setEmail("abc2@gmail.com");
+                  setPassword("111111");
+                }}
+              >
+                <td className="whitespace-nowrap border-r px-4 py-2 font-medium ">
+                  <span className="font-semibold">User 2</span>
+                </td>
+                <td className="whitespace-nowrap border-r px-4 py-2">
+                  abc2@gmail.com
+                </td>
+                <td className="whitespace-nowrap px-4 py-2">111111</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </form>
     </>
   );
 };
